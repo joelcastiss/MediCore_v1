@@ -1,0 +1,174 @@
+/* ══════════════════════════════════════════
+   pacientes.css — Estilos del módulo Pacientes
+   Depende de: shared.css (variables y base)
+   ══════════════════════════════════════════ */
+
+/* ── Layout principal ───────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Sidebar: lista de pacientes recientes ── */
+.patient-list-item {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  padding: .9rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--tr);
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.patient-list-item:last-child {
+  border-bottom: none;
+}
+
+.patient-list-item:hover {
+  background: var(--blue-pale);
+}
+
+.patient-list-item.selected {
+  background: var(--blue-pale);
+  border-left: 3px solid var(--blue);
+  margin-left: -3px;
+}
+
+.pli-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--blue-light));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .9rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.pli-name {
+  font-size: .83rem;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.pli-meta {
+  font-size: .68rem;
+  color: var(--gray-400);
+}
+
+.pli-code {
+  font-size: .65rem;
+  color: var(--blue);
+  font-weight: 600;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ── Modal detalle: grid de campos ─────── */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem .75rem;
+}
+
+.detail-item label {
+  font-size: .6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--gray-400);
+}
+
+.detail-item span {
+  font-size: .82rem;
+  color: var(--gray-900);
+  display: block;
+  margin-top: .15rem;
+}
+
+/* ── Pills de alergias con checkbox real ─ */
+.alergia-pill {
+  display: inline-flex;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Checkbox oculto visualmente pero funcional */
+.alergia-pill input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.pill-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .42rem .9rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--gray-300);
+  background: var(--white);
+  color: var(--gray-600);
+  font-size: .78rem;
+  font-weight: 500;
+  transition: all .18s ease;
+  line-height: 1;
+}
+
+.alergia-pill:hover .pill-inner {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-pale);
+}
+
+/* Estado seleccionado genérico */
+.alergia-pill input[type="checkbox"]:checked + .pill-inner {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(21, 101, 192, .25);
+}
+
+/* Ninguna seleccionada → gris */
+.alergia-pill[data-valor="Ninguna"] input[type="checkbox"]:checked + .pill-inner {
+  background: var(--gray-500);
+  border-color: var(--gray-500);
+}
+
+/* Otro seleccionada → verde */
+.alergia-pill[data-valor="Otro"] input[type="checkbox"]:checked + .pill-inner {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+/* ── Sub-formulario (apoderado / emergencia) */
+.subform {
+  background: var(--gray-50);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem;
+}
+
+.subform-title {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: .85rem;
+}

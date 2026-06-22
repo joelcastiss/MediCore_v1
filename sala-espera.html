@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCore — Sala de Espera</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="sala-espera.css"/>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-inner">
+    <a href="index.html" class="logo-link">
+      <div class="logo-mark">M</div>
+      <div class="logo-text-wrap">
+        <span class="logo-name">MediCore</span>
+        <span class="logo-sub">Sistema Clínico</span>
+      </div>
+    </a>
+    <nav class="app-nav">
+      <a href="index.html"       class="nav-item"><span class="nav-num">00</span><span class="nav-label">Inicio</span></a>
+      <a href="pacientes.html"   class="nav-item"><span class="nav-num">01</span><span class="nav-label">Pacientes</span></a>
+      <a href="citas.html"       class="nav-item"><span class="nav-num">02</span><span class="nav-label">Citas</span></a>
+      <a href="sala-espera.html" class="nav-item active"><span class="nav-num">03</span><span class="nav-label">Sala de Espera</span></a>
+      <a href="historial.html"   class="nav-item"><span class="nav-num">04</span><span class="nav-label">Historial</span></a>
+      <a href="reportes.html"    class="nav-item"><span class="nav-num">05</span><span class="nav-label">Reportes</span></a>
+    </nav>
+    <div class="nav-right">
+      <span class="nav-clock" id="nav-clock">00:00:00</span>
+      <div class="nav-status"><div class="status-dot"></div>Sistema activo</div>
+    </div>
+  </div>
+</header>
+
+<main class="page-wrap">
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <div class="page-hero-label">Módulo 03</div>
+      <div class="page-hero-title">Sala de Espera Virtual</div>
+      <div class="page-hero-sub">Gestión del orden de atención. Urgentes primero, luego por hora de llegada.</div>
+    </div>
+    <div class="page-hero-actions">
+      <button class="btn btn-white" onclick="renderSala()">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row" style="margin-bottom:1.25rem">
+    <div class="stat-card"><div class="stat-icon red">🚨</div><div><div class="stat-val" id="st-urgentes">0</div><div class="stat-label">Urgentes</div></div></div>
+    <div class="stat-card"><div class="stat-icon orange">⭐</div><div><div class="stat-val" id="st-preferencial">0</div><div class="stat-label">Preferencial</div></div></div>
+    <div class="stat-card"><div class="stat-icon blue">⏳</div><div><div class="stat-val" id="st-espera">0</div><div class="stat-label">En Espera</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">🩺</div><div><div class="stat-val" id="st-atencion">0</div><div class="stat-label">En Atención</div></div></div>
+    <div class="stat-card"><div class="stat-icon teal">✅</div><div><div class="stat-val" id="st-atendidos">0</div><div class="stat-label">Atendidos Hoy</div></div></div>
+  </div>
+
+  <div class="sala-grid">
+    <!-- Lista principal -->
+    <div>
+      <!-- Filtros -->
+      <div style="display:flex;gap:.65rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;">
+        <select class="form-control" id="f-medico" onchange="renderSala()" style="max-width:200px">
+          <option value="">Todos los médicos</option>
+        </select>
+        <select class="form-control" id="f-especialidad" onchange="renderSala()" style="max-width:200px">
+          <option value="">Todas las especialidades</option>
+          <option>Medicina general</option>
+          <option>Pediatría</option>
+          <option>Cardiología</option>
+          <option>Dermatología</option>
+          <option>Traumatología</option>
+          <option>Ginecología</option>
+          <option>Odontología</option>
+        </select>
+        <select class="form-control" id="f-estado-sala" onchange="renderSala()" style="max-width:160px">
+          <option value="">Todos los estados</option>
+          <option value="En espera">En Espera</option>
+          <option value="En atención">En Atención</option>
+          <option value="Atendido">Atendidos</option>
+          <option value="No asistió">No asistió</option>
+        </select>
+      </div>
+
+      <!-- Cards -->
+      <div id="sala-lista"></div>
+      <div id="empty-sala" class="empty-state" style="display:none">
+        <div class="empty-icon">🏥</div>
+        <div class="empty-title">Sala de espera vacía</div>
+        <div class="empty-sub">No hay pacientes en espera en este momento.<br>Confirma citas desde el módulo de Citas y envíalos a sala de espera.</div>
+        <a href="citas.html" class="btn btn-primary" style="margin-top:1rem">Ver Citas →</a>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div style="position:sticky;top:80px;display:flex;flex-direction:column;gap:1rem;">
+
+      <!-- Ticker turno actual -->
+      <div class="ticker">
+        <div>
+          <div class="ticker-label">Turno en atención</div>
+          <div class="ticker-num" id="ticker-num">—</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:.8rem;font-weight:600;opacity:.9" id="ticker-pac">Ninguno</div>
+          <div style="font-size:.7rem;opacity:.6" id="ticker-esp">—</div>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div class="card">
+        <div class="card-title">Resumen del Día</div>
+        <div id="resumen-dia"></div>
+      </div>
+
+      <!-- Próximos -->
+      <div class="card">
+        <div class="card-title">Próximos en Atención</div>
+        <div id="proximos-lista"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal "No asistió" -->
+<div class="modal-overlay" id="modal-noasistio">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <div class="modal-title">Marcar como No Asistió</div>
+      <button class="modal-close" onclick="closeModal('modal-noasistio')">✕</button>
+    </div>
+    <div class="alert alert-warn" style="margin-bottom:1rem">
+      <span class="alert-icon">⚠️</span>El paciente será marcado como "No asistió". La cita quedará registrada.
+    </div>
+    <input type="hidden" id="noasistio-codigo"/>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-noasistio')">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmarNoAsistio()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pasar a historial -->
+<div class="modal-overlay" id="modal-a-historial">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <div class="modal-title">Finalizar Atención</div>
+      <button class="modal-close" onclick="closeModal('modal-a-historial')">✕</button>
+    </div>
+    <div class="alert alert-success" style="margin-bottom:1rem">
+      <span class="alert-icon">✅</span>La consulta será marcada como "Atendida" y podrás registrar el historial clínico.
+    </div>
+    <input type="hidden" id="atendido-codigo"/>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-a-historial')">Cancelar</button>
+      <button class="btn btn-success" onclick="confirmarAtendido()">✅ Marcar Atendida</button>
+      <a id="btn-ir-historial" href="#" class="btn btn-primary" style="display:none" onclick="closeModal('modal-a-historial')">📋 Registrar Historial →</a>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const perfil = await requireAuth();
+  if (!perfil) return;
+  applyRoleAccess(perfil.rol);
+  renderUserHeader(perfil);
+});
+</script>
+<script src="sala-espera.js"></script>
+</body>
+</html>

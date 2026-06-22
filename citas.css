@@ -1,0 +1,108 @@
+.filters-bar {
+  display: flex;
+  gap: .65rem;
+  flex-wrap: wrap;
+  align-items: center;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.cita-card {
+  background: white;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: all var(--tr);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.cita-card:hover {
+  box-shadow: var(--shadow);
+  border-color: var(--blue-pale2);
+}
+
+.cita-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: .85rem;
+}
+
+.cita-main { flex: 1; }
+
+.cita-header {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: .5rem;
+  flex-wrap: wrap;
+}
+
+.cita-code {
+  font-size: .65rem;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.cita-paciente {
+  font-size: .92rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.cita-meta {
+  font-size: .74rem;
+  color: var(--gray-500);
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin-bottom: .65rem;
+}
+
+.cita-meta span {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.cita-motivo {
+  font-size: .76rem;
+  color: var(--gray-600);
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+  padding: .4rem .65rem;
+  border-left: 2px solid var(--blue-pale2);
+}
+
+.cita-allergy {
+  background: var(--red-pale);
+  color: #991B1B;
+  border-radius: var(--radius-sm);
+  padding: .3rem .6rem;
+  font-size: .68rem;
+  font-weight: 600;
+  margin-top: .4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+}
+
+.cita-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+/* Urgente highlight */
+.cita-card.urgente     { border-left: 4px solid var(--red); }
+.cita-card.preferencial { border-left: 4px solid var(--orange); }

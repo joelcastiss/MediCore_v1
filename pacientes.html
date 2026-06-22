@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCore â€” Registro de Pacientes</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="pacientes.css"/>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-inner">
+    <a href="index.html" class="logo-link">
+      <div class="logo-mark">M</div>
+      <div class="logo-text-wrap">
+        <span class="logo-name">MediCore</span>
+        <span class="logo-sub">Sistema ClÃ­nico</span>
+      </div>
+    </a>
+    <nav class="app-nav">
+      <a href="index.html"       class="nav-item"><span class="nav-num">00</span><span class="nav-label">Inicio</span></a>
+      <a href="pacientes.html"   class="nav-item active"><span class="nav-num">01</span><span class="nav-label">Pacientes</span></a>
+      <a href="citas.html"       class="nav-item"><span class="nav-num">02</span><span class="nav-label">Citas</span></a>
+      <a href="sala-espera.html" class="nav-item"><span class="nav-num">03</span><span class="nav-label">Sala de Espera</span></a>
+      <a href="historial.html"   class="nav-item"><span class="nav-num">04</span><span class="nav-label">Historial</span></a>
+      <a href="reportes.html"    class="nav-item"><span class="nav-num">05</span><span class="nav-label">Reportes</span></a>
+    </nav>
+    <div class="nav-right">
+      <span class="nav-clock" id="nav-clock">00:00:00</span>
+      <div class="nav-status"><div class="status-dot"></div>Sistema activo</div>
+    </div>
+  </div>
+</header>
+
+<main class="page-wrap">
+
+  <!-- Hero -->
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <div class="page-hero-label">MÃ³dulo 01</div>
+      <div class="page-hero-title">Registro de Pacientes</div>
+      <div class="page-hero-sub">Gestiona el alta, ediciÃ³n y bÃºsqueda de pacientes registrados en el sistema.</div>
+    </div>
+    <div class="page-hero-actions">
+      <button type="button" class="btn btn-white" data-paciente-nuevo>âž• Nuevo Paciente</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon blue">ðŸ‘¥</div>
+      <div><div class="stat-val" id="st-total">0</div><div class="stat-label">Total Pacientes</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">ðŸŸ¢</div>
+      <div><div class="stat-val" id="st-adultos">0</div><div class="stat-label">Adultos</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">âš ï¸</div>
+      <div><div class="stat-val" id="st-menores">0</div><div class="stat-label">Menores de edad</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red">ðŸš¨</div>
+      <div><div class="stat-val" id="st-alergias">0</div><div class="stat-label">Con Alergias</div></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Main table -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+        <div class="card-title-lg" style="margin:0">Lista de Pacientes</div>
+        <div class="search-bar">
+          <div class="search-input-wrap">
+            <span class="search-icon">ðŸ”</span>
+            <input type="text" class="form-control" id="search-pac" placeholder="Buscar por nombre, apellido o DNIâ€¦" oninput="renderTable()"/>
+          </div>
+          <select class="form-control" id="filter-alergia" onchange="renderTable()" style="min-width:130px;">
+            <option value="">Todas las alergias</option>
+            <option value="si">Con alergias</option>
+            <option value="no">Sin alergias</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="tabla-pacientes">
+          <thead>
+            <tr>
+              <th>CÃ³digo</th>
+              <th>Paciente</th>
+              <th>Documento</th>
+              <th>Edad</th>
+              <th>TelÃ©fono</th>
+              <th>Alergias</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-pac"></tbody>
+        </table>
+      </div>
+      <div id="empty-pac" class="empty-state" style="display:none">
+        <div class="empty-icon">ðŸ‘¥</div>
+        <div class="empty-title">No hay pacientes registrados</div>
+        <div class="empty-sub">Registra el primer paciente con el botÃ³n "Nuevo Paciente"</div>
+        <button type="button" class="btn btn-primary" style="margin-top:1rem" data-paciente-nuevo>âž• Nuevo Paciente</button>
+      </div>
+    </div>
+
+    <!-- Sidebar: quick list -->
+    <div class="card" style="position:sticky;top:80px;">
+      <div class="card-title">Pacientes Recientes</div>
+      <div id="lista-recientes"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• MODAL NUEVO / EDITAR PACIENTE â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="modal-overlay" id="modal-nuevo">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-pac-title">Nuevo Paciente</div>
+        <div class="modal-subtitle">Complete todos los campos requeridos (<span style="color:var(--red)">*</span>)</div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modal-nuevo')">âœ•</button>
+    </div>
+
+    <form id="form-paciente" novalidate>
+      <input type="hidden" id="pac-codigo-edit"/>
+
+      <!-- Bloque 1: Datos personales -->
+      <div class="section-label" style="margin-bottom:.75rem">Datos Personales</div>
+      <div class="form-grid" style="margin-bottom:1.25rem">
+
+        <div class="form-group">
+          <label class="form-label">CÃ³digo <span class="opt">(auto)</span></label>
+          <input type="text" class="form-control" id="pac-codigo" readonly placeholder="PAC001"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nombres <span class="req">*</span></label>
+          <input type="text" class="form-control" id="pac-nombres" maxlength="60" placeholder="Ej: MarÃ­a Elena"/>
+          <div class="form-error" id="pac-nombres-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Apellidos <span class="req">*</span></label>
+          <input type="text" class="form-control" id="pac-apellidos" maxlength="80" placeholder="Ej: GarcÃ­a Torres"/>
+          <div class="form-error" id="pac-apellidos-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tipo de Documento <span class="req">*</span></label>
+          <select class="form-control" id="pac-tipo-doc" onchange="onTipoDocChange()">
+            <option value="">Seleccionarâ€¦</option>
+            <option value="DNI">DNI</option>
+            <option value="Pasaporte">Pasaporte</option>
+            <option value="Carnet de extranjerÃ­a">Carnet de extranjerÃ­a</option>
+          </select>
+          <div class="form-error" id="pac-tipo-doc-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">NÂ° Documento <span class="req">*</span></label>
+          <input type="text" class="form-control" id="pac-doc" placeholder="Ej: 12345678" maxlength="15"/>
+          <div class="form-hint" id="doc-hint">Seleccione el tipo de documento primero</div>
+          <div class="form-error" id="pac-doc-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fecha de Nacimiento <span class="req">*</span></label>
+          <input type="date" class="form-control" id="pac-nacimiento" onchange="onNacimientoChange()"/>
+          <div class="form-error" id="pac-nacimiento-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Edad (calculada)</label>
+          <div class="form-display" id="pac-edad-display">â€”</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">TelÃ©fono <span class="req">*</span></label>
+          <input type="tel" class="form-control" id="pac-telefono" maxlength="9" placeholder="987654321"/>
+          <div class="form-hint">9 dÃ­gitos (celular peruano)</div>
+          <div class="form-error" id="pac-telefono-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Correo ElectrÃ³nico <span class="opt">(opcional)</span></label>
+          <input type="email" class="form-control" id="pac-email" placeholder="correo@ejemplo.com"/>
+          <div class="form-error" id="pac-email-err"></div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">DirecciÃ³n <span class="opt">(opcional)</span></label>
+          <input type="text" class="form-control" id="pac-direccion" maxlength="150" placeholder="Av. Ejemplo 123, Lima"/>
+          <div class="form-error" id="pac-direccion-err"></div>
+        </div>
+
+      </div>
+
+      <!-- Bloque apoderado (menores) -->
+      <div id="bloque-apoderado" style="display:none;margin-bottom:1.25rem;">
+        <div class="alert alert-warn" style="margin-bottom:.85rem">
+          <span class="alert-icon">âš ï¸</span>
+          <span>El paciente es menor de edad. Se requiere datos del apoderado.</span>
+        </div>
+        <div class="subform">
+          <div class="subform-title">Datos del Apoderado</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nombre del Apoderado <span class="req">*</span></label>
+              <input type="text" class="form-control" id="pac-apoderado" placeholder="Nombre completo"/>
+              <div class="form-error" id="pac-apoderado-err"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Parentesco <span class="req">*</span></label>
+              <select class="form-control" id="pac-parentesco-apoderado">
+                <option value="">Seleccionarâ€¦</option>
+                <option>Padre</option><option>Madre</option>
+                <option>Tutor legal</option><option>Abuelo/a</option><option>Otro</option>
+              </select>
+              <div class="form-error" id="pac-parentesco-apoderado-err"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alergias -->
+      <div class="section-label" style="margin-bottom:.5rem">
+        Alergias <span style="color:var(--red);font-size:1rem;line-height:1">*</span>
+      </div>
+      <div style="font-size:.7rem;color:var(--gray-400);margin-bottom:.75rem">
+        Puedes seleccionar varias. Si no tiene alergias conocidas, marca "Ninguna".
+      </div>
+      <div class="form-group full" style="margin-bottom:1.25rem">
+        <div id="check-alergias" style="display:flex;flex-wrap:wrap;gap:.5rem;">
+          <label class="alergia-pill" data-valor="Ninguna">
+            <input type="checkbox" name="alergia" value="Ninguna" onchange="onAlergiaChange(this)"/>
+            <span class="pill-inner">Ninguna</span>
+          </label>
+          <label class="alergia-pill" data-valor="Penicilina">
+            <input type="checkbox" name="alergia" value="Penicilina" onchange="onAlergiaChange(this)"/>
+            <span class="pill-inner">Penicilina</span>
+          </label>
+          <label class="alergia-pill" data-valor="Ibuprofeno">
+            <input type="checkbox" name="alergia" value="Ibuprofeno" onchange="onAlergiaChange(this)"/>
+            <span class="pill-inner">Ibuprofeno</span>
+          </label>
+          <label class="alergia-pill" data-valor="Paracetamol">
+            <input type="checkbox" name="alergia" value="Paracetamol" onchange="onAlergiaChange(this)"/>
+            <span class="pill-inner">Paracetamol</span>
+          </label>
+          <label class="alergia-pill" data-valor="Mariscos">
+            <input type="checkbox" name="alergia" value="Mariscos" onchange="onAlergiaChange(this)"/>
+            <span class="pill-inner">Mariscos</span>
+          </label>
+          <label class="alergia-pill" data-valor="Lactosa">
+            <input type="checkbox" name="alergia" value="Lactosa" onchange="onAlergiaChange(this)"/>
+            <span class="pill-inner">Lactosa</span>
+          </label>
+          <label class="alergia-pill" data-valor="Polen">
+            <input type="checkbox" name="alergia" value="Polen" onchange="onAlergiaChange(this)"/>
+            <span class="pill-inner">Polen</span>
+          </label>
+          <label class="alergia-pill" data-valor="Otro">
+            <input type="checkbox" name="alergia" value="Otro" onchange="onAlergiaChange(this)"/>
+            <span class="pill-inner">âœï¸ Otro</span>
+          </label>
+        </div>
+
+        <div class="form-error" id="alergias-err" style="margin-top:.5rem"></div>
+
+        <div id="bloque-otro-alergia" style="display:none;margin-top:.75rem;">
+          <label class="form-label" style="margin-bottom:.35rem">
+            Especifica la alergia <span style="color:var(--red)">*</span>
+          </label>
+          <input type="text" class="form-control" id="pac-alergia-otro"
+            placeholder="Ej: LÃ¡tex, Sulfas, Aspirinaâ€¦" maxlength="100"/>
+          <div class="form-error" id="pac-alergia-otro-err"></div>
+        </div>
+
+        <div id="alergias-resumen" style="margin-top:.65rem;display:none">
+          <span style="font-size:.68rem;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.08em;">
+            Seleccionadas:
+          </span>
+          <span id="alergias-resumen-texto" style="font-size:.75rem;color:var(--blue);font-weight:600;margin-left:.35rem;"></span>
+        </div>
+      </div>
+
+      <!-- Contacto de emergencia -->
+      <div class="section-label" style="margin-bottom:.75rem">Contacto de Emergencia <span style="color:var(--red);font-size:1rem">*</span></div>
+      <div class="subform" style="margin-bottom:1.25rem">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nombre <span class="req">*</span></label>
+            <input type="text" class="form-control" id="pac-emerg-nombre" placeholder="Nombre del contacto" maxlength="80"/>
+            <div class="form-error" id="pac-emerg-nombre-err"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Parentesco <span class="req">*</span></label>
+            <select class="form-control" id="pac-emerg-parentesco">
+              <option value="">Seleccionarâ€¦</option>
+              <option>CÃ³nyuge</option><option>Padre</option><option>Madre</option>
+              <option>Hijo/a</option><option>Hermano/a</option><option>Amigo/a</option>
+              <option>Tutor legal</option><option>Otro</option>
+            </select>
+            <div class="form-error" id="pac-emerg-parentesco-err"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">TelÃ©fono <span class="req">*</span></label>
+            <input type="tel" class="form-control" id="pac-emerg-tel" maxlength="9" placeholder="987654321"/>
+            <div class="form-error" id="pac-emerg-tel-err"></div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closeModal('modal-nuevo')">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btn-guardar-paciente">ðŸ’¾ Guardar Paciente</button>
+    </div>
+  </div>
+</div>
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• MODAL DETALLE â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="modal-overlay" id="modal-detalle">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="det-titulo">Ficha del Paciente</div>
+        <div class="modal-subtitle" id="det-codigo"></div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('modal-detalle')">âœ•</button>
+    </div>
+    <div id="det-contenido"></div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closeModal('modal-detalle')">Cerrar</button>
+      <button type="button" class="btn btn-outline" id="det-btn-editar">âœï¸ Editar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const perfil = await requireAuth();
+  if (!perfil) return;
+  applyRoleAccess(perfil.rol);
+  renderUserHeader(perfil);
+});
+</script>
+<script src="pacientes.js"></script>
+</body>
+</html>

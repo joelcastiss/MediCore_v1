@@ -1,0 +1,44 @@
+.report-grid   { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.25rem; }
+.report-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.25rem; margin-bottom:1.25rem; }
+@media(max-width:900px){ .report-grid{grid-template-columns:1fr;} .report-grid-3{grid-template-columns:1fr 1fr;} }
+@media(max-width:600px){ .report-grid-3{grid-template-columns:1fr;} }
+
+/* Chart containers */
+.chart-wrap { position:relative; }
+canvas { width:100%!important; }
+
+/* Bar manual */
+.bar-row { display:flex; align-items:center; gap:.75rem; margin-bottom:.7rem; }
+.bar-label { font-size:.75rem; color:var(--gray-700); font-weight:500; min-width:130px; flex-shrink:0; }
+.bar-track { flex:1; background:var(--gray-100); border-radius:var(--radius-full); height:10px; overflow:hidden; }
+.bar-fill  { height:100%; border-radius:var(--radius-full); transition:width .8s cubic-bezier(.22,1,.36,1); }
+.bar-val   { font-size:.72rem; font-weight:700; color:var(--gray-700); min-width:28px; text-align:right; }
+
+/* Donut SVG */
+.donut-wrap { display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; }
+.donut-legend { display:flex; flex-direction:column; gap:.5rem; }
+.legend-item { display:flex; align-items:center; gap:.5rem; font-size:.75rem; }
+.legend-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.legend-label{ color:var(--gray-600); flex:1; }
+.legend-val  { font-weight:700; color:var(--gray-900); }
+
+/* Ranking list */
+.rank-item { display:flex; align-items:center; gap:.75rem; padding:.6rem 0; border-bottom:1px solid var(--gray-100); }
+.rank-item:last-child { border:none; }
+.rank-pos { width:24px; height:24px; border-radius:50%; background:var(--blue-pale); color:var(--blue); display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:800; flex-shrink:0; }
+.rank-pos.gold   { background:#FFF3CD; color:#B45309; }
+.rank-pos.silver { background:#F1F5F9; color:var(--gray-500); }
+.rank-pos.bronze { background:#FEF3C7; color:#92400E; }
+.rank-name { flex:1; font-size:.8rem; font-weight:600; color:var(--gray-900); }
+.rank-val  { font-size:.78rem; font-weight:700; color:var(--blue); }
+
+/* Table reporte */
+.report-table-wrap { overflow-x:auto; max-height:320px; overflow-y:auto; }
+
+/* Export btns */
+.export-bar { display:flex; gap:.65rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+
+/* Period filter */
+.period-tabs { display:flex; gap:.35rem; flex-wrap:wrap; }
+.period-tab { padding:.35rem .9rem; border-radius:var(--radius-full); font-size:.7rem; font-weight:600; cursor:pointer; border:1.5px solid var(--gray-200); color:var(--gray-500); transition:all var(--tr); background:white; }
+.period-tab.active { background:var(--blue); border-color:var(--blue); color:white; }

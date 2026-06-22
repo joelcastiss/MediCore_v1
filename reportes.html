@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCore — Reportes</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="reportes.css"/>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-inner">
+    <a href="index.html" class="logo-link">
+      <div class="logo-mark">M</div>
+      <div class="logo-text-wrap">
+        <span class="logo-name">MediCore</span>
+        <span class="logo-sub">Sistema Clínico</span>
+      </div>
+    </a>
+    <nav class="app-nav">
+      <a href="index.html"       class="nav-item"><span class="nav-num">00</span><span class="nav-label">Inicio</span></a>
+      <a href="pacientes.html"   class="nav-item"><span class="nav-num">01</span><span class="nav-label">Pacientes</span></a>
+      <a href="citas.html"       class="nav-item"><span class="nav-num">02</span><span class="nav-label">Citas</span></a>
+      <a href="sala-espera.html" class="nav-item"><span class="nav-num">03</span><span class="nav-label">Sala de Espera</span></a>
+      <a href="historial.html"   class="nav-item"><span class="nav-num">04</span><span class="nav-label">Historial</span></a>
+      <a href="reportes.html"    class="nav-item active"><span class="nav-num">05</span><span class="nav-label">Reportes</span></a>
+    </nav>
+    <div class="nav-right">
+      <span class="nav-clock" id="nav-clock">00:00:00</span>
+      <div class="nav-status"><div class="status-dot"></div>Sistema activo</div>
+    </div>
+  </div>
+</header>
+
+<main class="page-wrap">
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <div class="page-hero-label">Módulo 05</div>
+      <div class="page-hero-title">Reportes y Estadísticas</div>
+      <div class="page-hero-sub">Análisis de atención clínica, productividad médica y tendencias.</div>
+    </div>
+    <div class="page-hero-actions">
+      <button class="btn btn-white" onclick="generarReporte()">🔄 Actualizar</button>
+      <button class="btn btn-lg" style="background:rgba(255,255,255,.15);color:white;border-color:rgba(255,255,255,.3)" onclick="exportarCSV()">📥 Exportar CSV</button>
+    </div>
+  </div>
+
+  <!-- Filtro período -->
+  <div class="card" style="margin-bottom:1.25rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div>
+        <div class="card-title" style="margin:0">Período de Análisis</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div class="period-tabs">
+          <button class="period-tab" onclick="setPeriodo('hoy',this)">Hoy</button>
+          <button class="period-tab" onclick="setPeriodo('semana',this)">Esta semana</button>
+          <button class="period-tab active" onclick="setPeriodo('mes',this)">Este mes</button>
+          <button class="period-tab" onclick="setPeriodo('todo',this)">Todo</button>
+        </div>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <input type="date" class="form-control" id="r-desde" style="max-width:150px"/>
+          <span style="color:var(--gray-400);font-size:.8rem">—</span>
+          <input type="date" class="form-control" id="r-hasta" style="max-width:150px"/>
+          <button class="btn btn-outline btn-sm" onclick="aplicarFiltroFecha()">Aplicar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Stats -->
+  <div class="stats-row" style="margin-bottom:1.25rem" id="kpi-row">
+    <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-val" id="kpi-pacs">0</div><div class="stat-label">Pacientes Registrados</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-val" id="kpi-atendidas">0</div><div class="stat-label">Consultas Atendidas</div></div></div>
+    <div class="stat-card"><div class="stat-icon orange">📅</div><div><div class="stat-val" id="kpi-programadas">0</div><div class="stat-label">Citas Programadas</div></div></div>
+    <div class="stat-card"><div class="stat-icon red">❌</div><div><div class="stat-val" id="kpi-canceladas">0</div><div class="stat-label">Canceladas / No asistió</div></div></div>
+    <div class="stat-card"><div class="stat-icon teal">📋</div><div><div class="stat-val" id="kpi-hist">0</div><div class="stat-label">Historiales Registrados</div></div></div>
+  </div>
+
+  <!-- Row 1: Especialidades + Estados -->
+  <div class="report-grid">
+    <div class="card">
+      <div class="card-title">Citas por Especialidad</div>
+      <div id="chart-especialidades"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Distribución por Estado</div>
+      <div class="donut-wrap" id="chart-estados">
+        <div id="donut-svg"></div>
+        <div class="donut-legend" id="donut-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Médicos + Prioridades -->
+  <div class="report-grid">
+    <div class="card">
+      <div class="card-title">Ranking de Médicos por Atenciones</div>
+      <div id="chart-medicos"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Citas por Prioridad</div>
+      <div id="chart-prioridades"></div>
+    </div>
+  </div>
+
+  <!-- Row 3: Pacientes con más citas + alergias -->
+  <div class="report-grid">
+    <div class="card">
+      <div class="card-title">Pacientes con más Consultas</div>
+      <div id="chart-top-pacs"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Alergias más Frecuentes</div>
+      <div id="chart-alergias"></div>
+    </div>
+  </div>
+
+  <!-- Tabla detalle -->
+  <div class="card" style="margin-bottom:1.25rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem">
+      <div class="card-title" style="margin:0">Detalle de Citas</div>
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="form-control" id="r-buscar" placeholder="Buscar…" oninput="renderTablaDetalle()"/>
+        </div>
+        <select class="form-control" id="r-estado-tabla" onchange="renderTablaDetalle()" style="max-width:150px">
+          <option value="">Todos</option>
+          <option>Programada</option>
+          <option>Confirmada</option>
+          <option>En espera</option>
+          <option>En atención</option>
+          <option>Atendida</option>
+          <option>Cancelada</option>
+          <option>No asistió</option>
+        </select>
+      </div>
+    </div>
+    <div class="report-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Código</th><th>Paciente</th><th>Médico</th>
+            <th>Especialidad</th><th>Fecha</th><th>Hora</th>
+            <th>Estado</th><th>Prioridad</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-reporte"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast-container"></div>
+
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const perfil = await requireAuth();
+  if (!perfil) return;
+  applyRoleAccess(perfil.rol);
+  renderUserHeader(perfil);
+});
+</script>
+<script src="reportes.js"></script>
+</body>
+</html>

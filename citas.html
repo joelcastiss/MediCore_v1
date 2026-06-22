@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCore — Citas Médicas</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="citas.css"/>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-inner">
+    <a href="index.html" class="logo-link">
+      <div class="logo-mark">M</div>
+      <div class="logo-text-wrap">
+        <span class="logo-name">MediCore</span>
+        <span class="logo-sub">Sistema Clínico</span>
+      </div>
+    </a>
+    <nav class="app-nav">
+      <a href="index.html"       class="nav-item"><span class="nav-num">00</span><span class="nav-label">Inicio</span></a>
+      <a href="pacientes.html"   class="nav-item"><span class="nav-num">01</span><span class="nav-label">Pacientes</span></a>
+      <a href="citas.html"       class="nav-item active"><span class="nav-num">02</span><span class="nav-label">Citas</span></a>
+      <a href="sala-espera.html" class="nav-item"><span class="nav-num">03</span><span class="nav-label">Sala de Espera</span></a>
+      <a href="historial.html"   class="nav-item"><span class="nav-num">04</span><span class="nav-label">Historial</span></a>
+      <a href="reportes.html"    class="nav-item"><span class="nav-num">05</span><span class="nav-label">Reportes</span></a>
+    </nav>
+    <div class="nav-right">
+      <span class="nav-clock" id="nav-clock">00:00:00</span>
+      <div class="nav-status"><div class="status-dot"></div>Sistema activo</div>
+    </div>
+  </div>
+</header>
+
+<main class="page-wrap">
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <div class="page-hero-label">Módulo 02</div>
+      <div class="page-hero-title">Programación de Citas</div>
+      <div class="page-hero-sub">Gestiona citas médicas por especialidad, médico y horario. Controla estados y prioridades.</div>
+    </div>
+    <div class="page-hero-actions">
+      <button class="btn btn-white" onclick="abrirNuevaCita()">📅 Nueva Cita</button>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-icon blue">📅</div><div><div class="stat-val" id="st-total">0</div><div class="stat-label">Total Citas</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-val" id="st-hoy">0</div><div class="stat-label">Citas Hoy</div></div></div>
+    <div class="stat-card"><div class="stat-icon orange">⏳</div><div><div class="stat-val" id="st-espera">0</div><div class="stat-label">En Espera</div></div></div>
+    <div class="stat-card"><div class="stat-icon red">🚨</div><div><div class="stat-val" id="st-urgentes">0</div><div class="stat-label">Urgentes</div></div></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="form-control" id="f-buscar" placeholder="Buscar paciente, médico…" oninput="renderCitas()"/>
+    </div>
+    <input type="date" class="form-control" id="f-fecha" style="max-width:160px" onchange="renderCitas()"/>
+    <select class="form-control" id="f-estado" onchange="renderCitas()" style="max-width:160px">
+      <option value="">Todos los estados</option>
+      <option>Programada</option><option>Confirmada</option>
+      <option>En espera</option><option>En atención</option>
+      <option>Atendida</option><option>Cancelada</option><option>No asistió</option>
+    </select>
+    <select class="form-control" id="f-especialidad" onchange="renderCitas()" style="max-width:180px">
+      <option value="">Todas las especialidades</option>
+      <option>Medicina general</option><option>Pediatría</option>
+      <option>Cardiología</option><option>Dermatología</option>
+      <option>Traumatología</option><option>Ginecología</option><option>Odontología</option>
+    </select>
+    <select class="form-control" id="f-prioridad" onchange="renderCitas()" style="max-width:140px">
+      <option value="">Toda prioridad</option>
+      <option>Urgente</option><option>Preferencial</option><option>Normal</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" onclick="limpiarFiltros()">✕ Limpiar</button>
+  </div>
+
+  <!-- List -->
+  <div id="cita-card-grid" class="cita-card-grid"></div>
+  <div id="empty-citas" class="empty-state" style="display:none">
+    <div class="empty-icon">📅</div>
+    <div class="empty-title">No hay citas registradas</div>
+    <div class="empty-sub">Crea la primera cita con el botón "Nueva Cita"</div>
+    <button class="btn btn-primary" style="margin-top:1rem" onclick="abrirNuevaCita()">📅 Nueva Cita</button>
+  </div>
+</main>
+
+<!-- ══════ MODAL NUEVA/EDITAR CITA ══════ -->
+<div class="modal-overlay" id="modal-cita">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-cita-title">Nueva Cita</div>
+        <div class="modal-subtitle">Complete todos los campos requeridos (<span style="color:var(--red)">*</span>)</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-cita')">✕</button>
+    </div>
+
+    <form id="form-cita" novalidate>
+      <input type="hidden" id="cita-codigo-edit"/>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="form-label">Código de Cita <span class="opt">(auto)</span></label>
+          <input type="text" class="form-control" id="cita-codigo" readonly/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Paciente <span class="req">*</span></label>
+          <select class="form-control" id="cita-paciente" onchange="onPacienteChange()">
+            <option value="">Seleccionar paciente…</option>
+          </select>
+          <div class="form-error" id="cita-paciente-err"></div>
+        </div>
+
+        <!-- Info strip del paciente -->
+        <div class="form-group full" id="bloque-pac-info" style="display:none">
+          <div id="pac-info-strip"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Especialidad <span class="req">*</span></label>
+          <select class="form-control" id="cita-especialidad" onchange="onEspecialidadChange()">
+            <option value="">Seleccionar especialidad…</option>
+            <option>Medicina general</option><option>Pediatría</option>
+            <option>Cardiología</option><option>Dermatología</option>
+            <option>Traumatología</option><option>Ginecología</option><option>Odontología</option>
+          </select>
+          <div class="form-error" id="cita-especialidad-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Médico <span class="req">*</span></label>
+          <select class="form-control" id="cita-medico">
+            <option value="">Seleccione especialidad primero</option>
+          </select>
+          <div class="form-error" id="cita-medico-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fecha de Cita <span class="req">*</span></label>
+          <input type="date" class="form-control" id="cita-fecha"/>
+          <div class="form-error" id="cita-fecha-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hora de Cita <span class="req">*</span></label>
+          <select class="form-control" id="cita-hora">
+            <option value="">Seleccionar hora…</option>
+          </select>
+          <div class="form-hint">Horario: 08:00 — 18:00</div>
+          <div class="form-error" id="cita-hora-err"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Prioridad <span class="req">*</span></label>
+          <select class="form-control" id="cita-prioridad" onchange="onPrioridadChange()">
+            <option value="">Seleccionar…</option>
+            <option>Normal</option><option>Preferencial</option><option>Urgente</option>
+          </select>
+          <div class="form-error" id="cita-prioridad-err"></div>
+        </div>
+
+        <div class="form-group full" id="bloque-justificacion" style="display:none">
+          <label class="form-label">Justificación de Urgencia <span class="req">*</span></label>
+          <textarea class="form-control" id="cita-justificacion" maxlength="300"
+            placeholder="Describa los síntomas graves que justifican la atención urgente… (mínimo 10 caracteres)"></textarea>
+          <div class="form-error" id="cita-justificacion-err"></div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Motivo de Consulta <span class="req">*</span></label>
+          <textarea class="form-control" id="cita-motivo" maxlength="200"
+            placeholder="Describa claramente el motivo de la cita (mínimo 10 caracteres)…"></textarea>
+          <div class="form-hint">Entre 10 y 200 caracteres</div>
+          <div class="form-error" id="cita-motivo-err"></div>
+        </div>
+
+      </div>
+    </form>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cita')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCita()">💾 Guardar Cita</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL CANCELAR ══════ -->
+<div class="modal-overlay" id="modal-cancelar">
+  <div class="modal-box sm">
+    <div class="modal-header">
+      <div class="modal-title">Cancelar Cita</div>
+      <button class="modal-close" onclick="closeModal('modal-cancelar')">✕</button>
+    </div>
+    <div class="alert alert-error" style="margin-bottom:1rem">
+      <span class="alert-icon">⚠️</span>Confirma la cancelación de esta cita. Esta acción no se puede revertir.
+    </div>
+    <div class="form-group">
+      <label class="form-label">Motivo de Cancelación <span class="req">*</span></label>
+      <textarea class="form-control" id="motivo-cancelacion" placeholder="Ingrese el motivo de cancelación…" rows="3"></textarea>
+      <div class="form-error" id="motivo-cancelacion-err"></div>
+    </div>
+    <input type="hidden" id="cita-cancelar-codigo"/>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cancelar')">Volver</button>
+      <button class="btn btn-danger" onclick="confirmarCancelacion()">❌ Cancelar Cita</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const perfil = await requireAuth();
+  if (!perfil) return;
+  applyRoleAccess(perfil.rol);
+  renderUserHeader(perfil);
+});
+</script>
+<script src="citas.js"></script>
+</body>
+</html>

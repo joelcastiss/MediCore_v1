@@ -1,0 +1,48 @@
+.hist-layout { display:grid; grid-template-columns:320px 1fr; gap:1.5rem; align-items:start; }
+@media(max-width:1100px){ .hist-layout{grid-template-columns:1fr;} }
+
+/* Cita atendida item (para seleccionar) */
+.cita-atendida-item {
+  display:flex; align-items:center; gap:.75rem; padding:.85rem 1rem;
+  border-radius:var(--radius); cursor:pointer; transition:all var(--tr);
+  border-bottom:1px solid var(--gray-100); position:relative;
+}
+.cita-atendida-item:hover { background:var(--blue-pale); }
+.cita-atendida-item.selected { background:var(--blue-pale); border-left:3px solid var(--blue); margin-left:-3px; }
+.cai-icon { width:38px;height:38px;border-radius:var(--radius);background:var(--blue-pale);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0; }
+.cai-main { flex:1;min-width:0; }
+.cai-nombre { font-size:.83rem;font-weight:600;color:var(--gray-900); white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.cai-meta   { font-size:.68rem;color:var(--gray-400); }
+.cai-badge  { flex-shrink:0; }
+.has-hist { background:var(--green-pale) !important; }
+
+/* Historial list */
+.hist-card {
+  background:white; border:1.5px solid var(--gray-200); border-radius:var(--radius-lg);
+  padding:1.25rem; margin-bottom:.85rem; transition:all var(--tr);
+  box-shadow:var(--shadow-sm);
+}
+.hist-card:hover { box-shadow:var(--shadow); border-color:var(--blue-pale2); }
+.hist-card-header { display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap; }
+.hist-code { font-size:.68rem;font-weight:700;color:var(--blue); }
+.hist-fecha { font-size:.75rem;color:var(--gray-400); }
+.hist-section { margin-bottom:.9rem; }
+.hist-section-title { font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gray-400);margin-bottom:.35rem; }
+.hist-section-body { font-size:.82rem;color:var(--gray-700);line-height:1.65; }
+.hist-divider { border:none;border-top:1px solid var(--gray-100);margin:.85rem 0; }
+
+/* Medicamento pill */
+.med-item { background:var(--blue-pale);border-radius:var(--radius);padding:.5rem .75rem;margin-bottom:.4rem; }
+.med-nombre { font-size:.82rem;font-weight:700;color:var(--navy); }
+.med-detalle { font-size:.72rem;color:var(--blue);margin-top:.15rem; }
+
+/* Próxima cita chip */
+.prox-cita-chip {
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:var(--green-pale);border-radius:var(--radius-full);
+  padding:.3rem .85rem;font-size:.75rem;font-weight:600;color:#065F46;
+}
+
+/* Medicamento row en form */
+.med-row { display:grid;grid-template-columns:2fr 1fr 1.5fr 1.5fr auto;gap:.5rem;align-items:end; }
+@media(max-width:700px){ .med-row{grid-template-columns:1fr 1fr;} }

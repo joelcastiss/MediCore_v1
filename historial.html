@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCore — Historial de Consultas</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="historial.css"/>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-inner">
+    <a href="index.html" class="logo-link">
+      <div class="logo-mark">M</div>
+      <div class="logo-text-wrap">
+        <span class="logo-name">MediCore</span>
+        <span class="logo-sub">Sistema Clínico</span>
+      </div>
+    </a>
+    <nav class="app-nav">
+      <a href="index.html"       class="nav-item"><span class="nav-num">00</span><span class="nav-label">Inicio</span></a>
+      <a href="pacientes.html"   class="nav-item"><span class="nav-num">01</span><span class="nav-label">Pacientes</span></a>
+      <a href="citas.html"       class="nav-item"><span class="nav-num">02</span><span class="nav-label">Citas</span></a>
+      <a href="sala-espera.html" class="nav-item"><span class="nav-num">03</span><span class="nav-label">Sala de Espera</span></a>
+      <a href="historial.html"   class="nav-item active"><span class="nav-num">04</span><span class="nav-label">Historial</span></a>
+      <a href="reportes.html"    class="nav-item"><span class="nav-num">05</span><span class="nav-label">Reportes</span></a>
+    </nav>
+    <div class="nav-right">
+      <span class="nav-clock" id="nav-clock">00:00:00</span>
+      <div class="nav-status"><div class="status-dot"></div>Sistema activo</div>
+    </div>
+  </div>
+</header>
+
+<main class="page-wrap">
+  <div class="page-hero">
+    <div class="page-hero-text">
+      <div class="page-hero-label">Módulo 04</div>
+      <div class="page-hero-title">Historial de Consultas</div>
+      <div class="page-hero-sub">Expediente clínico por paciente. Solo citas atendidas generan historial médico.</div>
+    </div>
+  </div>
+
+  <div class="stats-row" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-icon blue">📋</div><div><div class="stat-val" id="st-hist">0</div><div class="stat-label">Consultas Registradas</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-val" id="st-pendientes">0</div><div class="stat-label">Atendidas sin historial</div></div></div>
+    <div class="stat-card"><div class="stat-icon orange">💊</div><div><div class="stat-val" id="st-con-meds">0</div><div class="stat-label">Con Medicamentos</div></div></div>
+    <div class="stat-card"><div class="stat-icon teal">👥</div><div><div class="stat-val" id="st-pacs-hist">0</div><div class="stat-label">Pacientes con Historial</div></div></div>
+  </div>
+
+  <div class="hist-layout">
+
+    <!-- Sidebar: lista de citas atendidas -->
+    <div class="card" style="position:sticky;top:80px;max-height:calc(100vh - 120px);overflow-y:auto;">
+      <div class="card-title">Citas Atendidas</div>
+      <div class="search-input-wrap" style="margin-bottom:1rem">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="form-control" id="search-citas-at" placeholder="Buscar paciente, código…" oninput="renderCitasAtendidas()"/>
+      </div>
+      <div id="lista-citas-atendidas"></div>
+    </div>
+
+    <!-- Main: historial del paciente / form -->
+    <div id="main-historial">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">Selecciona una cita atendida</div>
+        <div class="empty-sub">Elige una cita del panel izquierdo para ver o registrar el historial clínico.</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ══════ MODAL FORM HISTORIAL ══════ -->
+<div class="modal-overlay" id="modal-historial">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-hist-title">Registrar Consulta Médica</div>
+        <div class="modal-subtitle" id="modal-hist-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-historial')">✕</button>
+    </div>
+
+    <form id="form-historial" novalidate>
+      <input type="hidden" id="hist-cita-codigo"/>
+
+      <!-- Info del paciente -->
+      <div id="hist-pac-strip" style="margin-bottom:1.25rem"></div>
+
+      <div class="section-label" style="margin-bottom:.75rem">Datos de la Consulta</div>
+      <div class="form-grid" style="margin-bottom:1.25rem">
+        <div class="form-group">
+          <label class="form-label">Código de Historial <span class="opt">(auto)</span></label>
+          <input type="text" class="form-control" id="hist-codigo" readonly/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Médico Tratante</label>
+          <input type="text" class="form-control" id="hist-medico" readonly/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Especialidad</label>
+          <input type="text" class="form-control" id="hist-especialidad" readonly/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de Atención</label>
+          <input type="text" class="form-control" id="hist-fecha" readonly/>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-bottom:.75rem">Registro Clínico</div>
+      <div class="form-grid" style="margin-bottom:1.25rem">
+
+        <div class="form-group full">
+          <label class="form-label">Síntomas Reportados <span class="req">*</span></label>
+          <textarea class="form-control" id="hist-sintomas" maxlength="300" rows="3"
+            placeholder="Describa los síntomas indicados por el paciente (mínimo 10 caracteres)…"></textarea>
+          <div class="form-hint" id="hist-sintomas-cnt">0 / 300</div>
+          <div class="form-error" id="hist-sintomas-err"></div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Diagnóstico <span class="req">*</span></label>
+          <textarea class="form-control" id="hist-diagnostico" maxlength="300" rows="3"
+            placeholder="Resultado médico de la consulta (mínimo 10 caracteres)…"></textarea>
+          <div class="form-hint" id="hist-diagnostico-cnt">0 / 300</div>
+          <div class="form-error" id="hist-diagnostico-err"></div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Tratamiento / Indicaciones <span class="req">*</span></label>
+          <textarea class="form-control" id="hist-tratamiento" maxlength="400" rows="3"
+            placeholder="Indicaciones para el paciente: reposo, hidratación, medicamentos… (mínimo 10 caracteres)"></textarea>
+          <div class="form-hint" id="hist-tratamiento-cnt">0 / 400</div>
+          <div class="form-error" id="hist-tratamiento-err"></div>
+        </div>
+
+      </div>
+
+      <!-- Medicamentos -->
+      <div class="section-label" style="margin-bottom:.75rem">Medicamentos Recetados <span class="opt" style="font-size:.7rem;text-transform:none;letter-spacing:0;font-weight:400;color:var(--gray-400)">(opcional)</span></div>
+      <div id="med-lista" style="margin-bottom:.75rem"></div>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="agregarMed()" style="margin-bottom:1.25rem">➕ Agregar Medicamento</button>
+
+      <!-- Observaciones y próxima cita -->
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Observaciones Adicionales <span class="opt">(opcional)</span></label>
+          <textarea class="form-control" id="hist-observaciones" maxlength="300" rows="2"
+            placeholder="Comentarios adicionales del médico…"></textarea>
+            <span class="form-hint" id="hist-observaciones-cnt">0 / 300</span>
+            <div class="form-error" id="hist-observaciones-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Próxima Cita Recomendada <span class="opt">(opcional)</span></label>
+          <input type="date" class="form-control" id="hist-prox-cita"/>
+          <div class="form-hint">Debe ser una fecha futura</div>
+          <div class="form-error" id="hist-prox-cita-err"></div>
+        </div>
+      </div>
+    </form>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-historial')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarHistorial()">💾 Guardar Historial</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const perfil = await requireAuth();
+  if (!perfil) return;
+  applyRoleAccess(perfil.rol);
+  renderUserHeader(perfil);
+});
+</script>
+<script src="historial.js"></script>
+</body>
+</html>

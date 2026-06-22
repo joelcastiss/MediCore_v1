@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCore — Acceso al Sistema</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    /* ─────────────────────────────────────────
+       LOGIN PAGE — estilos propios
+       Depende de shared.css (variables y base)
+    ───────────────────────────────────────── */
+    body {
+      background: var(--gray-50);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Layout dividido: izq. branding / der. form ── */
+    .auth-wrapper {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    /* Panel izquierdo — branding */
+    .auth-brand {
+      background: linear-gradient(150deg, var(--navy) 0%, #1565C0 55%, #1976D2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 4rem 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-brand::before {
+      content: '';
+      position: absolute; top: -100px; right: -80px;
+      width: 380px; height: 380px; border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+    .auth-brand::after {
+      content: '';
+      position: absolute; bottom: -120px; left: -60px;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+    .brand-logo {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 3.5rem; position: relative; z-index: 1;
+    }
+    .brand-mark {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 1.3rem; font-weight: 800;
+    }
+    .brand-name  { font-size: 1.4rem; font-weight: 800; color: white; line-height: 1; }
+    .brand-sub   { font-size: 0.65rem; font-weight: 500; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: .1em; }
+
+    .brand-headline {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800; color: white; line-height: 1.2;
+      margin-bottom: 1rem; letter-spacing: -0.02em;
+      position: relative; z-index: 1;
+    }
+    .brand-headline span { color: var(--blue-light); }
+    .brand-body {
+      font-size: 0.87rem; color: rgba(255,255,255,0.65);
+      line-height: 1.75; margin-bottom: 2.5rem;
+      max-width: 360px; position: relative; z-index: 1;
+    }
+
+    .brand-features {
+      display: flex; flex-direction: column; gap: 0.75rem;
+      position: relative; z-index: 1;
+    }
+    .brand-feat {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-size: 0.78rem; color: rgba(255,255,255,0.8); font-weight: 500;
+    }
+    .brand-feat-icon {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.1); display: flex; align-items: center;
+      justify-content: center; font-size: 0.85rem; flex-shrink: 0;
+    }
+
+    /* Panel derecho — formularios */
+    .auth-panel {
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 3rem 2.5rem;
+      background: white; overflow-y: auto;
+    }
+    .auth-box { width: 100%; max-width: 420px; }
+
+    /* Tabs login / registro */
+    .auth-tabs {
+      display: flex; gap: 0; margin-bottom: 2rem;
+      background: var(--gray-100); border-radius: var(--radius-full);
+      padding: 4px;
+    }
+    .auth-tab {
+      flex: 1; padding: 0.55rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--gray-400); cursor: pointer;
+      transition: all var(--tr); text-align: center; border: none;
+      background: transparent; font-family: var(--font);
+    }
+    .auth-tab.active {
+      background: white; color: var(--blue);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    }
+
+    /* Formulario base */
+    .auth-form { display: flex; flex-direction: column; gap: 1.1rem; }
+    .auth-form-title {
+      font-size: 1.45rem; font-weight: 800; color: var(--gray-900);
+      margin-bottom: 0.25rem; letter-spacing: -0.01em;
+    }
+    .auth-form-sub {
+      font-size: 0.78rem; color: var(--gray-400);
+      margin-bottom: 0.5rem; line-height: 1.6;
+    }
+
+    /* Campos */
+    .input-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .input-group label {
+      font-size: 0.72rem; font-weight: 700; color: var(--gray-700);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 0.9rem; top: 50%;
+      transform: translateY(-50%); font-size: 0.9rem; pointer-events: none;
+    }
+    .input-wrap .form-control { padding-left: 2.4rem; }
+    .input-wrap .form-control:focus { outline: none; }
+
+    /* Botón de envío */
+    .auth-submit {
+      background: var(--blue); color: white;
+      border: none; border-radius: var(--radius-full);
+      padding: 0.85rem; font-family: var(--font);
+      font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; transition: all var(--tr);
+      box-shadow: 0 2px 10px rgba(21,101,192,0.35);
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .auth-submit:hover:not(:disabled) {
+      background: var(--navy);
+      box-shadow: 0 4px 16px rgba(21,101,192,0.45);
+      transform: translateY(-1px);
+    }
+    .auth-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Spinner dentro del botón */
+    .btn-spinner {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: white;
+      animation: spin 0.65s linear infinite;
+      display: none;
+    }
+    .auth-submit.loading .btn-spinner { display: block; }
+    .auth-submit.loading .btn-label   { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Alerta de errores */
+    .auth-alert {
+      padding: 0.8rem 1rem; border-radius: var(--radius);
+      font-size: 0.77rem; font-weight: 500; line-height: 1.55;
+      display: none; align-items: flex-start; gap: 0.5rem;
+    }
+    .auth-alert.show { display: flex; }
+    .auth-alert.error   { background: var(--red-pale);   border-left: 3px solid var(--red);   color: #991B1B; }
+    .auth-alert.success { background: var(--green-pale); border-left: 3px solid var(--green); color: #065F46; }
+    .auth-alert.info    { background: var(--blue-pale);  border-left: 3px solid var(--blue);  color: var(--navy); }
+
+    /* Separador */
+    .auth-divider {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-size: 0.7rem; color: var(--gray-300); font-weight: 500;
+    }
+    .auth-divider::before,
+    .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+
+    /* Chips de roles */
+    .role-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+    }
+    .role-chip {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 0.7rem 0.5rem; border-radius: var(--radius);
+      border: 1.5px solid var(--gray-200); cursor: pointer;
+      transition: all var(--tr); gap: 0.25rem;
+      font-size: 0.72rem; font-weight: 600; color: var(--gray-500);
+      font-family: var(--font);
+    }
+    .role-chip:hover { border-color: var(--blue-pale2); background: var(--blue-pale); color: var(--blue); }
+    .role-chip.selected { border-color: var(--blue); background: var(--blue-pale); color: var(--blue); }
+    .role-chip-icon { font-size: 1.2rem; }
+    .role-chip input { display: none; }
+
+    /* Pie */
+    .auth-footer-note {
+      font-size: 0.68rem; color: var(--gray-300); text-align: center;
+      margin-top: 1rem; line-height: 1.6;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .auth-wrapper { grid-template-columns: 1fr; }
+      .auth-brand   { display: none; }
+      .auth-panel   { padding: 2rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- ── Panel izquierdo: branding ─────────────────────────── -->
+  <div class="auth-brand">
+    <div class="brand-logo">
+      <div class="brand-mark">M</div>
+      <div>
+        <div class="brand-name">MediCore</div>
+        <div class="brand-sub">Sistema Clínico</div>
+      </div>
+    </div>
+
+    <h1 class="brand-headline">Gestiona tu clínica<br>de forma <span>inteligente</span></h1>
+    <p class="brand-body">
+      Plataforma integral para el control del flujo de atención médica:
+      desde el registro del paciente hasta el historial clínico completo.
+    </p>
+
+    <div class="brand-features">
+      <div class="brand-feat"><div class="brand-feat-icon">👥</div>Registro y gestión de pacientes</div>
+      <div class="brand-feat"><div class="brand-feat-icon">📅</div>Programación de citas con detección de conflictos</div>
+      <div class="brand-feat"><div class="brand-feat-icon">🏥</div>Sala de espera virtual con prioridades</div>
+      <div class="brand-feat"><div class="brand-feat-icon">📋</div>Historial clínico y medicamentos</div>
+      <div class="brand-feat"><div class="brand-feat-icon">📊</div>Reportes y exportación CSV</div>
+    </div>
+  </div>
+
+  <!-- ── Panel derecho: formularios ────────────────────────── -->
+  <div class="auth-panel">
+    <div class="auth-box">
+
+      <!-- Tabs -->
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')"   role="tab" aria-selected="true">Iniciar sesión</button>
+        <button class="auth-tab"        id="tab-registro" onclick="switchTab('registro')" role="tab" aria-selected="false">Crear cuenta</button>
+      </div>
+
+      <!-- ════════ FORMULARIO LOGIN ════════ -->
+      <div id="panel-login">
+        <div class="auth-form">
+          <div>
+            <div class="auth-form-title">Bienvenido</div>
+            <div class="auth-form-sub">Ingresa tus credenciales para acceder al sistema.</div>
+          </div>
+
+          <div id="alert-login" class="auth-alert"></div>
+
+          <div class="input-group">
+            <label for="login-email">Correo electrónico</label>
+            <div class="input-wrap">
+              <span class="input-icon">✉️</span>
+              <input type="email" id="login-email" class="form-control"
+                     placeholder="tucorreo@ejemplo.com" autocomplete="email"/>
+            </div>
+            <div class="form-error" id="login-email-err"></div>
+          </div>
+
+          <div class="input-group">
+            <label for="login-password">Contraseña</label>
+            <div class="input-wrap">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="login-password" class="form-control"
+                     placeholder="Mínimo 6 caracteres" autocomplete="current-password"/>
+            </div>
+            <div class="form-error" id="login-password-err"></div>
+          </div>
+
+          <button class="auth-submit" id="btn-login" onclick="handleLogin()">
+            <div class="btn-spinner"></div>
+            <span class="btn-label">Ingresar al sistema →</span>
+          </button>
+
+          <div class="auth-footer-note">
+            ¿No tienes cuenta?
+            <a href="#" onclick="switchTab('registro')" style="color:var(--blue);font-weight:600;">Crea una aquí</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ FORMULARIO REGISTRO ════════ -->
+      <div id="panel-registro" style="display:none">
+        <div class="auth-form">
+          <div>
+            <div class="auth-form-title">Crear cuenta</div>
+            <div class="auth-form-sub">Completa todos los campos. El administrador asignará el rol definitivo si es necesario.</div>
+          </div>
+
+          <div id="alert-registro" class="auth-alert"></div>
+
+          <div class="input-group">
+            <label for="reg-nombre">Nombre completo <span style="color:var(--red)">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">👤</span>
+              <input type="text" id="reg-nombre" class="form-control"
+                     placeholder="Nombres y apellidos"/>
+            </div>
+            <div class="form-error" id="reg-nombre-err"></div>
+          </div>
+
+          <div class="input-group">
+            <label for="reg-email">Correo electrónico <span style="color:var(--red)">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">✉️</span>
+              <input type="email" id="reg-email" class="form-control"
+                     placeholder="tucorreo@ejemplo.com" autocomplete="email"/>
+            </div>
+            <div class="form-error" id="reg-email-err"></div>
+          </div>
+
+          <div class="input-group">
+            <label for="reg-password">Contraseña <span style="color:var(--red)">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="reg-password" class="form-control"
+                     placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+            </div>
+            <div class="form-error" id="reg-password-err"></div>
+          </div>
+
+          <div class="input-group">
+            <label for="reg-confirm">Confirmar contraseña <span style="color:var(--red)">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">🔑</span>
+              <input type="password" id="reg-confirm" class="form-control"
+                     placeholder="Repite la contraseña" autocomplete="new-password"/>
+            </div>
+            <div class="form-error" id="reg-confirm-err"></div>
+          </div>
+
+          <div class="input-group">
+            <label>Rol en la clínica <span style="color:var(--red)">*</span></label>
+            <div class="role-grid" id="role-grid">
+              <label class="role-chip" data-rol="Administrador">
+                <input type="radio" name="rol" value="Administrador"/>
+                <span class="role-chip-icon">🛡️</span>
+                Administrador
+              </label>
+              <label class="role-chip" data-rol="Recepción">
+                <input type="radio" name="rol" value="Recepción"/>
+                <span class="role-chip-icon">🖥️</span>
+                Recepción
+              </label>
+              <label class="role-chip" data-rol="Médico">
+                <input type="radio" name="rol" value="Médico"/>
+                <span class="role-chip-icon">👨‍⚕️</span>
+                Médico
+              </label>
+              <label class="role-chip" data-rol="Enfermería">
+                <input type="radio" name="rol" value="Enfermería"/>
+                <span class="role-chip-icon">💊</span>
+                Enfermería
+              </label>
+            </div>
+            <div class="form-error" id="reg-rol-err"></div>
+          </div>
+
+          <button class="auth-submit" id="btn-registro" onclick="handleRegistro()">
+            <div class="btn-spinner"></div>
+            <span class="btn-label">Crear cuenta →</span>
+          </button>
+
+          <div class="auth-footer-note">
+            ¿Ya tienes cuenta?
+            <a href="#" onclick="switchTab('login')" style="color:var(--blue);font-weight:600;">Inicia sesión</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script src="login.js"></script>
+<script>
+  /* Chips de rol — interacción visual */
+  document.querySelectorAll('.role-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+    });
+  });
+
+  /* Enviar con Enter */
+  document.getElementById('login-password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleLogin();
+  });
+  document.getElementById('reg-confirm').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleRegistro();
+  });
+</script>
+</body>
+</html>

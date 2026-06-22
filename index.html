@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCore — Inicio</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    /* ── HOME-SPECIFIC ── */
+    body { background: var(--gray-50); }
+
+    /* Hero Section */
+    .home-hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #1565C0 60%, #1976D2 100%);
+      padding: 3.5rem 2rem 3rem;
+      position: relative; overflow: hidden;
+    }
+    .home-hero-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; gap: 3rem; flex-wrap: wrap;
+    }
+    .home-hero::before {
+      content:''; position:absolute; top:-80px; right:-80px;
+      width:400px; height:400px; border-radius:50%;
+      background: rgba(255,255,255,0.04);
+    }
+    .home-hero::after {
+      content:''; position:absolute; bottom:-100px; right:200px;
+      width:300px; height:300px; border-radius:50%;
+      background: rgba(255,255,255,0.03);
+    }
+    .hero-content { flex:1; min-width:280px; position:relative;z-index:1; }
+    .hero-eyebrow {
+      display:inline-flex; align-items:center; gap:0.5rem;
+      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
+      border-radius:var(--radius-full); padding:0.35rem 0.85rem;
+      font-size:0.68rem; font-weight:600; color:var(--blue-light);
+      letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1.2rem;
+    }
+    .hero-dot { width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-dot 2s ease infinite; }
+    .hero-title {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800; color: white; line-height: 1.15;
+      margin-bottom: 0.85rem; letter-spacing: -0.02em;
+    }
+    .hero-title span { color: var(--blue-light); }
+    .hero-subtitle { font-size:0.92rem; color:rgba(255,255,255,0.65); margin-bottom:2rem; line-height:1.7; max-width:440px; }
+    .hero-actions { display:flex; gap:0.75rem; flex-wrap:wrap; }
+    .hero-stats {
+      flex-shrink:0; display:flex; flex-direction:column; gap:0.75rem;
+      position:relative;z-index:1;
+    }
+    .hero-stat-card {
+      background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
+      border-radius:var(--radius-lg); padding:1rem 1.5rem;
+      backdrop-filter:blur(10px); min-width:190px;
+    }
+    .hs-val { font-size:2rem; font-weight:800; color:white; line-height:1; }
+    .hs-label { font-size:0.68rem; color:rgba(255,255,255,0.6); font-weight:500; text-transform:uppercase; letter-spacing:.05em; margin-top:.25rem; }
+
+    /* Quick actions */
+    .quick-section {
+      max-width:1280px; margin: 0 auto;
+      padding: 2.5rem 2rem 0;
+    }
+    .quick-label { font-size:0.7rem; font-weight:700; color:var(--gray-400); text-transform:uppercase; letter-spacing:.1em; margin-bottom:1rem; }
+    .quick-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(170px,1fr)); gap:0.85rem; }
+    .quick-card {
+      background:white; border:1.5px solid var(--gray-200); border-radius:var(--radius-lg);
+      padding:1.25rem; cursor:pointer; text-decoration:none;
+      transition:all var(--tr); display:flex; flex-direction:column; align-items:flex-start; gap:0.75rem;
+      box-shadow:var(--shadow-sm);
+    }
+    .quick-card:hover { border-color:var(--blue); box-shadow:0 4px 20px rgba(21,101,192,.12); transform:translateY(-2px); }
+    .qc-icon {
+      width:42px;height:42px; border-radius:var(--radius); display:flex;align-items:center;justify-content:center;
+      font-size:1.3rem; background:var(--blue-pale);
+    }
+    .qc-text { font-size:0.82rem; font-weight:600; color:var(--gray-900); line-height:1.3; }
+    .qc-sub  { font-size:0.65rem; color:var(--gray-400); }
+
+    /* Modules section */
+    .modules-section {
+      max-width:1280px; margin:0 auto; padding:2.5rem 2rem 3rem;
+    }
+    .section-header {
+      display:flex;align-items:flex-end;justify-content:space-between;
+      gap:1rem;flex-wrap:wrap; margin-bottom:1.5rem;
+    }
+    .section-title { font-size:1.5rem;font-weight:800;color:var(--gray-900); }
+
+    .modules-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:1.25rem; }
+
+    .module-card {
+      background:white; border:1.5px solid var(--gray-200); border-radius:var(--radius-xl);
+      padding:1.75rem; display:flex;flex-direction:column;gap:1.2rem;
+      box-shadow:var(--shadow-sm); transition:all var(--tr); cursor:default;
+      position:relative; overflow:hidden;
+    }
+    .module-card::before {
+      content:''; position:absolute; top:0;left:0; right:0; height:3px;
+      background:linear-gradient(90deg, var(--blue), var(--blue-light));
+      transform:scaleX(0); transform-origin:left; transition:transform .35s ease;
+    }
+    .module-card:hover { border-color:var(--blue-pale2); box-shadow:var(--shadow); transform:translateY(-3px); }
+    .module-card:hover::before { transform:scaleX(1); }
+
+    .mc-header { display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem; }
+    .mc-num {
+      font-size:0.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+      color:white; background:var(--blue); padding:.2rem .6rem; border-radius:var(--radius-full);
+    }
+    .mc-icon {
+      width:48px;height:48px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;
+      font-size:1.5rem; background:var(--blue-pale); flex-shrink:0;
+    }
+    .mc-title { font-size:1.15rem;font-weight:700;color:var(--gray-900); }
+    .mc-desc { font-size:0.8rem;color:var(--gray-500);line-height:1.7; flex:1; }
+
+    .mc-tags { display:flex;flex-wrap:wrap;gap:.4rem; }
+    .mc-tag {
+      font-size:0.65rem;font-weight:600;color:var(--blue);
+      background:var(--blue-pale);border-radius:var(--radius-full);padding:.18rem .6rem;
+    }
+    .mc-footer { display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding-top:.75rem;border-top:1px solid var(--gray-100); }
+    .mc-status { font-size:0.65rem;color:var(--gray-400);display:flex;align-items:center;gap:.35rem; }
+    .mc-status-dot { width:6px;height:6px;border-radius:50%;background:var(--green); }
+
+    /* ── Especialidades ── */
+    .especialidades-section {
+      max-width: 1280px; margin: 0 auto; padding: 0 2rem 3rem;
+    }
+    .esp-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap; margin-bottom: 1.75rem;
+    }
+    .esp-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+    .esp-card {
+      background: white;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--tr);
+      display: flex; flex-direction: column;
+    }
+    .esp-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-4px);
+      border-color: var(--blue-pale2);
+    }
+    .esp-img-wrap {
+      position: relative; overflow: hidden;
+      height: 160px; flex-shrink: 0;
+    }
+    .esp-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s ease;
+      display: block;
+    }
+    .esp-card:hover .esp-img { transform: scale(1.06); }
+    .esp-img-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(13,34,64,0.3) 100%);
+    }
+    .esp-body {
+      padding: 1rem 1.1rem 1.25rem;
+      display: flex; flex-direction: column; gap: .4rem; flex: 1;
+    }
+    .esp-icon {
+      font-size: 1.4rem; line-height: 1;
+    }
+    .esp-title {
+      font-size: .95rem; font-weight: 700;
+      color: var(--gray-900); line-height: 1.2;
+    }
+    .esp-desc {
+      font-size: .74rem; color: var(--gray-500);
+      line-height: 1.65; flex: 1;
+    }
+    @media(max-width: 1100px){
+      .esp-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media(max-width: 768px){
+      .especialidades-section { padding: 0 1rem 2.5rem; }
+      .esp-grid { grid-template-columns: repeat(2, 1fr); gap: .85rem; }
+      .esp-img-wrap { height: 130px; }
+    }
+    @media(max-width: 480px){
+      .esp-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Banner */
+    .banner-section { max-width:1280px;margin:0 auto;padding:0 2rem 3rem; }
+    .banner {
+      background:linear-gradient(135deg,#E3F2FD 0%,#BBDEFB 100%);
+      border:1.5px solid var(--blue-pale2); border-radius:var(--radius-xl);
+      padding:2rem 2.5rem; display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;
+    }
+    .banner-left h3 { font-size:1.25rem;font-weight:800;color:var(--navy);margin-bottom:.4rem; }
+    .banner-left p  { font-size:.82rem;color:var(--blue);max-width:420px; }
+    .banner-img { font-size:3.5rem; opacity:.7; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="app-header-inner">
+    <a href="index.html" class="logo-link">
+      <div class="logo-mark">M</div>
+      <div class="logo-text-wrap">
+        <span class="logo-name">MediCore</span>
+        <span class="logo-sub">Sistema Clínico</span>
+      </div>
+    </a>
+    <nav class="app-nav">
+      <a href="index.html"       class="nav-item active"><span class="nav-num">00</span><span class="nav-label">Inicio</span></a>
+      <a href="pacientes.html"   class="nav-item"><span class="nav-num">01</span><span class="nav-label">Pacientes</span></a>
+      <a href="citas.html"       class="nav-item"><span class="nav-num">02</span><span class="nav-label">Citas</span></a>
+      <a href="sala-espera.html" class="nav-item"><span class="nav-num">03</span><span class="nav-label">Sala de Espera</span></a>
+      <a href="historial.html"   class="nav-item"><span class="nav-num">04</span><span class="nav-label">Historial</span></a>
+      <a href="reportes.html"    class="nav-item"><span class="nav-num">05</span><span class="nav-label">Reportes</span></a>
+    </nav>
+    <div class="nav-right">
+      <span class="nav-clock" id="nav-clock">00:00:00</span>
+      <div class="nav-status"><div class="status-dot"></div>Sistema activo</div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="home-hero">
+  <div class="home-hero-inner">
+    <div class="hero-content">
+      <div class="hero-eyebrow"><span class="hero-dot"></span>Sistema de Gestión Clínica</div>
+      <h1 class="hero-title">Te cuidamos,<br><span>te curamos.</span></h1>
+      <p class="hero-subtitle">Plataforma integral para la gestión de pacientes, citas médicas y atención clínica. Hola, ¿qué necesitas hacer hoy?</p>
+      <div class="hero-actions">
+        <a href="pacientes.html" class="btn btn-white btn-lg">➕ Nuevo Paciente</a>
+        <a href="citas.html" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:white;border-color:rgba(255,255,255,.3);">📅 Agendar Cita</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat-card">
+        <div class="hs-val" id="hs-pac">0</div>
+        <div class="hs-label">Pacientes Registrados</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="hs-val" id="hs-citas">0</div>
+        <div class="hs-label">Citas Programadas Hoy</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="hs-val" id="hs-espera">0</div>
+        <div class="hs-label">Pacientes en Espera</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK ACTIONS -->
+<div class="quick-section">
+  <div class="quick-label">Acceso Rápido</div>
+  <div class="quick-grid">
+    <a href="pacientes.html" class="quick-card">
+      <div class="qc-icon">👤</div>
+      <div><div class="qc-text">Registrar paciente</div><div class="qc-sub">Alta nuevo paciente</div></div>
+    </a>
+    <a href="citas.html" class="quick-card">
+      <div class="qc-icon">📅</div>
+      <div><div class="qc-text">Agendar una cita</div><div class="qc-sub">Nueva cita médica</div></div>
+    </a>
+    <a href="sala-espera.html" class="quick-card">
+      <div class="qc-icon">🏥</div>
+      <div><div class="qc-text">Sala de espera</div><div class="qc-sub">Ver pacientes en turno</div></div>
+    </a>
+    <a href="historial.html" class="quick-card">
+      <div class="qc-icon">📋</div>
+      <div><div class="qc-text">Ver historial</div><div class="qc-sub">Expediente clínico</div></div>
+    </a>
+    <a href="reportes.html" class="quick-card">
+      <div class="qc-icon">📊</div>
+      <div><div class="qc-text">Reportes</div><div class="qc-sub">Estadísticas y datos</div></div>
+    </a>
+  </div>
+</div>
+
+<!-- MODULES -->
+<div class="modules-section">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Sistema Modular</div>
+      <div class="section-title">Módulos del Sistema</div>
+    </div>
+  </div>
+  <div class="modules-grid">
+
+    <div class="module-card">
+      <div class="mc-header">
+        <span class="mc-num">Módulo 01</span>
+        <div class="mc-icon">👥</div>
+      </div>
+      <div class="mc-title">Registro de Pacientes</div>
+      <div class="mc-desc">Alta y gestión completa del perfil de cada paciente. Datos personales, documento de identidad, alergias y contacto de emergencia.</div>
+      <div class="mc-tags">
+        <span class="mc-tag">Nuevo paciente</span>
+        <span class="mc-tag">Buscar</span>
+        <span class="mc-tag">Editar</span>
+        <span class="mc-tag">Alergias</span>
+      </div>
+      <div class="mc-footer">
+        <div class="mc-status"><div class="mc-status-dot"></div>Activo</div>
+        <a href="pacientes.html" class="btn btn-primary btn-sm">Ir al módulo →</a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="mc-header">
+        <span class="mc-num">Módulo 02</span>
+        <div class="mc-icon">📅</div>
+      </div>
+      <div class="mc-title">Programación de Citas</div>
+      <div class="mc-desc">Calendario de citas médicas por especialidad y médico. Control de horarios, prioridades de atención y detección de conflictos.</div>
+      <div class="mc-tags">
+        <span class="mc-tag">Nueva cita</span>
+        <span class="mc-tag">Especialidades</span>
+        <span class="mc-tag">Prioridad</span>
+        <span class="mc-tag">Estados</span>
+      </div>
+      <div class="mc-footer">
+        <div class="mc-status"><div class="mc-status-dot"></div>Activo</div>
+        <a href="citas.html" class="btn btn-primary btn-sm">Ir al módulo →</a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="mc-header">
+        <span class="mc-num">Módulo 03</span>
+        <div class="mc-icon">🏥</div>
+      </div>
+      <div class="mc-title">Sala de Espera Virtual</div>
+      <div class="mc-desc">Monitoreo en tiempo real del flujo de pacientes. Orden por prioridad, hora de llegada y gestión de estados de atención.</div>
+      <div class="mc-tags">
+        <span class="mc-tag">En espera</span>
+        <span class="mc-tag">En atención</span>
+        <span class="mc-tag">Turnos</span>
+        <span class="mc-tag">Prioridad</span>
+      </div>
+      <div class="mc-footer">
+        <div class="mc-status"><div class="mc-status-dot"></div>Activo</div>
+        <a href="sala-espera.html" class="btn btn-primary btn-sm">Ir al módulo →</a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="mc-header">
+        <span class="mc-num">Módulo 04</span>
+        <div class="mc-icon">📋</div>
+      </div>
+      <div class="mc-title">Historial de Consultas</div>
+      <div class="mc-desc">Expediente clínico completo: síntomas, diagnósticos, tratamientos y medicamentos recetados por cada consulta atendida.</div>
+      <div class="mc-tags">
+        <span class="mc-tag">Diagnóstico</span>
+        <span class="mc-tag">Tratamiento</span>
+        <span class="mc-tag">Recetas</span>
+        <span class="mc-tag">Seguimiento</span>
+      </div>
+      <div class="mc-footer">
+        <div class="mc-status"><div class="mc-status-dot"></div>Activo</div>
+        <a href="historial.html" class="btn btn-primary btn-sm">Ir al módulo →</a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="mc-header">
+        <span class="mc-num">Módulo 05</span>
+        <div class="mc-icon">📊</div>
+      </div>
+      <div class="mc-title">Reportes</div>
+      <div class="mc-desc">Estadísticas de atención, productividad médica y tendencias clínicas. Visualización de datos por período, especialidad y estado.</div>
+      <div class="mc-tags">
+        <span class="mc-tag">Estadísticas</span>
+        <span class="mc-tag">Gráficos</span>
+        <span class="mc-tag">Exportar</span>
+        <span class="mc-tag">Tendencias</span>
+      </div>
+      <div class="mc-footer">
+        <div class="mc-status"><div class="mc-status-dot"></div>Activo</div>
+        <a href="reportes.html" class="btn btn-primary btn-sm">Ir al módulo →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ESPECIALIDADES -->
+<div class="especialidades-section">
+  <div class="esp-header">
+    <div>
+      <div class="section-label">Lo que ofrecemos</div>
+      <div class="section-title">Nuestras Especialidades</div>
+    </div>
+  </div>
+
+  <div class="esp-grid">
+
+    <div class="esp-card">
+      <div class="esp-img-wrap">
+        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80&fit=crop" alt="Medicina General" class="esp-img"/>
+        <div class="esp-img-overlay"></div>
+      </div>
+      <div class="esp-body">
+        <div class="esp-icon">🩺</div>
+        <h3 class="esp-title">Medicina General</h3>
+        <p class="esp-desc">Atención primaria integral para adultos y niños. Diagnóstico, tratamiento y seguimiento de enfermedades comunes y crónicas.</p>
+      </div>
+    </div>
+
+    <div class="esp-card">
+      <div class="esp-img-wrap">
+        <img src="https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?w=600&q=80&fit=crop" alt="Pediatría" class="esp-img"/>
+        <div class="esp-img-overlay"></div>
+      </div>
+      <div class="esp-body">
+        <div class="esp-icon">👶</div>
+        <h3 class="esp-title">Pediatría</h3>
+        <p class="esp-desc">Cuidado especializado de la salud infantil desde el nacimiento hasta la adolescencia. Control de crecimiento y desarrollo.</p>
+      </div>
+    </div>
+
+    <div class="esp-card">
+      <div class="esp-img-wrap">
+        <img src="https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=600&q=80&fit=crop" alt="Cardiología" class="esp-img"/>
+        <div class="esp-img-overlay"></div>
+      </div>
+      <div class="esp-body">
+        <div class="esp-icon">❤️</div>
+        <h3 class="esp-title">Cardiología</h3>
+        <p class="esp-desc">Prevención, diagnóstico y tratamiento de enfermedades del corazón y del sistema cardiovascular con tecnología avanzada.</p>
+      </div>
+    </div>
+
+    <div class="esp-card">
+      <div class="esp-img-wrap">
+        <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&q=80&fit=crop" alt="Dermatología" class="esp-img"/>
+        <div class="esp-img-overlay"></div>
+      </div>
+      <div class="esp-body">
+        <div class="esp-icon">🔬</div>
+        <h3 class="esp-title">Dermatología</h3>
+        <p class="esp-desc">Diagnóstico y tratamiento de enfermedades de la piel, cabello y uñas. Dermatología clínica y estética.</p>
+      </div>
+    </div>
+
+    <div class="esp-card">
+      <div class="esp-img-wrap">
+        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80&fit=crop" alt="Traumatología" class="esp-img"/>
+        <div class="esp-img-overlay"></div>
+      </div>
+      <div class="esp-body">
+        <div class="esp-icon">🦴</div>
+        <h3 class="esp-title">Traumatología</h3>
+        <p class="esp-desc">Prevención y tratamiento de lesiones óseas, articulares y trastornos del sistema musculoesquelético.</p>
+      </div>
+    </div>
+
+    <div class="esp-card">
+      <div class="esp-img-wrap">
+        <img src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=600&q=80&fit=crop" alt="Ginecología" class="esp-img"/>
+        <div class="esp-img-overlay"></div>
+      </div>
+      <div class="esp-body">
+        <div class="esp-icon">🌸</div>
+        <h3 class="esp-title">Ginecología</h3>
+        <p class="esp-desc">Atención integral de la salud femenina. Control prenatal, ginecología clínica y seguimiento reproductivo.</p>
+      </div>
+    </div>
+
+    <div class="esp-card">
+      <div class="esp-img-wrap">
+        <img src="https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&q=80&fit=crop" alt="Odontología" class="esp-img"/>
+        <div class="esp-img-overlay"></div>
+      </div>
+      <div class="esp-body">
+        <div class="esp-icon">🦷</div>
+        <h3 class="esp-title">Odontología</h3>
+        <p class="esp-desc">Salud bucal completa: limpieza, ortodoncia, restauraciones y tratamientos estéticos dentales para toda la familia.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BANNER -->
+<div class="banner-section">
+  <div class="banner">
+    <div class="banner-left">
+      <h3>🏥 Atención organizada, pacientes satisfechos</h3>
+      <p>Gestiona el flujo completo de tu clínica: desde el registro del paciente hasta el historial de consultas, todo integrado en un solo sistema.</p>
+    </div>
+    <div style="display:flex;gap:.65rem;flex-wrap:wrap;align-items:center;">
+      <a href="pacientes.html" class="btn btn-primary">Registrar Paciente</a>
+      <a href="citas.html"     class="btn btn-outline">Ver Citas</a>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  // ── Auth guard y control de roles ──────────────────────
+  const perfil = await requireAuth();
+  if (!perfil) return;
+  applyRoleAccess(perfil.rol);
+  renderUserHeader(perfil);
+  // ── Cargar datos desde Supabase ─────────────────────────
+  try {
+    const [pacs, citas] = await Promise.all([getPacientesCache(), getCitasCache()]);
+    const today    = new Date().toISOString().split('T')[0];
+    const citasHoy = citas.filter(c => c.fecha === today && !['Cancelada','No asistió'].includes(c.estado));
+    const espera   = citas.filter(c => c.estado === 'En espera');
+    animateCount(document.getElementById('hs-pac'),    pacs.length);
+    animateCount(document.getElementById('hs-citas'),  citasHoy.length);
+    animateCount(document.getElementById('hs-espera'), espera.length);
+  } catch(e) {
+    console.error('Error cargando estadísticas:', e);
+  }
+});
+</script>
+</body>
+</html>
