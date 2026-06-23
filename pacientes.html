@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MediCore â€” Registro de Pacientes</title>
+  <title>MediCore — Registro de Pacientes</title>
   <link rel="stylesheet" href="shared.css"/>
   <link rel="stylesheet" href="pacientes.css"/>
 </head>
@@ -15,7 +15,7 @@
       <div class="logo-mark">M</div>
       <div class="logo-text-wrap">
         <span class="logo-name">MediCore</span>
-        <span class="logo-sub">Sistema ClÃ­nico</span>
+        <span class="logo-sub">Sistema Clínico</span>
       </div>
     </a>
     <nav class="app-nav">
@@ -38,12 +38,12 @@
   <!-- Hero -->
   <div class="page-hero">
     <div class="page-hero-text">
-      <div class="page-hero-label">MÃ³dulo 01</div>
+      <div class="page-hero-label">Módulo 01</div>
       <div class="page-hero-title">Registro de Pacientes</div>
-      <div class="page-hero-sub">Gestiona el alta, ediciÃ³n y bÃºsqueda de pacientes registrados en el sistema.</div>
+      <div class="page-hero-sub">Gestiona el alta, edición y búsqueda de pacientes registrados en el sistema.</div>
     </div>
     <div class="page-hero-actions">
-      <button type="button" class="btn btn-white" data-paciente-nuevo>âž• Nuevo Paciente</button>
+      <button type="button" class="btn btn-white" data-paciente-nuevo>➕ Nuevo Paciente</button>
     </div>
   </div>
 
@@ -58,7 +58,7 @@
       <div><div class="stat-val" id="st-adultos">0</div><div class="stat-label">Adultos</div></div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon orange">âš ï¸</div>
+      <div class="stat-icon orange">⚠️</div>
       <div><div class="stat-val" id="st-menores">0</div><div class="stat-label">Menores de edad</div></div>
     </div>
     <div class="stat-card">
@@ -75,7 +75,7 @@
         <div class="search-bar">
           <div class="search-input-wrap">
             <span class="search-icon">ðŸ”</span>
-            <input type="text" class="form-control" id="search-pac" placeholder="Buscar por nombre, apellido o DNIâ€¦" oninput="renderTable()"/>
+            <input type="text" class="form-control" id="search-pac" placeholder="Buscar por nombre, apellido o DNI…" oninput="renderTable()"/>
           </div>
           <select class="form-control" id="filter-alergia" onchange="renderTable()" style="min-width:130px;">
             <option value="">Todas las alergias</option>
@@ -88,11 +88,11 @@
         <table class="data-table" id="tabla-pacientes">
           <thead>
             <tr>
-              <th>CÃ³digo</th>
+              <th>Código</th>
               <th>Paciente</th>
               <th>Documento</th>
               <th>Edad</th>
-              <th>TelÃ©fono</th>
+              <th>Teléfono</th>
               <th>Alergias</th>
               <th>Acciones</th>
             </tr>
@@ -103,8 +103,8 @@
       <div id="empty-pac" class="empty-state" style="display:none">
         <div class="empty-icon">ðŸ‘¥</div>
         <div class="empty-title">No hay pacientes registrados</div>
-        <div class="empty-sub">Registra el primer paciente con el botÃ³n "Nuevo Paciente"</div>
-        <button type="button" class="btn btn-primary" style="margin-top:1rem" data-paciente-nuevo>âž• Nuevo Paciente</button>
+        <div class="empty-sub">Registra el primer paciente con el botón "Nuevo Paciente"</div>
+        <button type="button" class="btn btn-primary" style="margin-top:1rem" data-paciente-nuevo>➕ Nuevo Paciente</button>
       </div>
     </div>
 
@@ -117,7 +117,7 @@
 
 </main>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• MODAL NUEVO / EDITAR PACIENTE â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ══════════════ MODAL NUEVO / EDITAR PACIENTE ══════════════ -->
 <div class="modal-overlay" id="modal-nuevo">
   <div class="modal-box lg">
     <div class="modal-header">
@@ -125,7 +125,7 @@
         <div class="modal-title" id="modal-pac-title">Nuevo Paciente</div>
         <div class="modal-subtitle">Complete todos los campos requeridos (<span style="color:var(--red)">*</span>)</div>
       </div>
-      <button type="button" class="modal-close" onclick="closeModal('modal-nuevo')">âœ•</button>
+      <button type="button" class="modal-close" onclick="closeModal('modal-nuevo')">✕</button>
     </div>
 
     <form id="form-paciente" novalidate>
@@ -136,35 +136,35 @@
       <div class="form-grid" style="margin-bottom:1.25rem">
 
         <div class="form-group">
-          <label class="form-label">CÃ³digo <span class="opt">(auto)</span></label>
+          <label class="form-label">Código <span class="opt">(auto)</span></label>
           <input type="text" class="form-control" id="pac-codigo" readonly placeholder="PAC001"/>
         </div>
 
         <div class="form-group">
           <label class="form-label">Nombres <span class="req">*</span></label>
-          <input type="text" class="form-control" id="pac-nombres" maxlength="60" placeholder="Ej: MarÃ­a Elena"/>
+          <input type="text" class="form-control" id="pac-nombres" maxlength="60" placeholder="Ej: María Elena"/>
           <div class="form-error" id="pac-nombres-err"></div>
         </div>
 
         <div class="form-group">
           <label class="form-label">Apellidos <span class="req">*</span></label>
-          <input type="text" class="form-control" id="pac-apellidos" maxlength="80" placeholder="Ej: GarcÃ­a Torres"/>
+          <input type="text" class="form-control" id="pac-apellidos" maxlength="80" placeholder="Ej: García Torres"/>
           <div class="form-error" id="pac-apellidos-err"></div>
         </div>
 
         <div class="form-group">
           <label class="form-label">Tipo de Documento <span class="req">*</span></label>
           <select class="form-control" id="pac-tipo-doc" onchange="onTipoDocChange()">
-            <option value="">Seleccionarâ€¦</option>
+            <option value="">Seleccionar…</option>
             <option value="DNI">DNI</option>
             <option value="Pasaporte">Pasaporte</option>
-            <option value="Carnet de extranjerÃ­a">Carnet de extranjerÃ­a</option>
+            <option value="Carnet de extranjería">Carnet de extranjería</option>
           </select>
           <div class="form-error" id="pac-tipo-doc-err"></div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">NÂ° Documento <span class="req">*</span></label>
+          <label class="form-label">N° Documento <span class="req">*</span></label>
           <input type="text" class="form-control" id="pac-doc" placeholder="Ej: 12345678" maxlength="15"/>
           <div class="form-hint" id="doc-hint">Seleccione el tipo de documento primero</div>
           <div class="form-error" id="pac-doc-err"></div>
@@ -178,24 +178,24 @@
 
         <div class="form-group">
           <label class="form-label">Edad (calculada)</label>
-          <div class="form-display" id="pac-edad-display">â€”</div>
+          <div class="form-display" id="pac-edad-display">—</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">TelÃ©fono <span class="req">*</span></label>
+          <label class="form-label">Teléfono <span class="req">*</span></label>
           <input type="tel" class="form-control" id="pac-telefono" maxlength="9" placeholder="987654321"/>
-          <div class="form-hint">9 dÃ­gitos (celular peruano)</div>
+          <div class="form-hint">9 dígitos (celular peruano)</div>
           <div class="form-error" id="pac-telefono-err"></div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Correo ElectrÃ³nico <span class="opt">(opcional)</span></label>
+          <label class="form-label">Correo Electrónico <span class="opt">(opcional)</span></label>
           <input type="email" class="form-control" id="pac-email" placeholder="correo@ejemplo.com"/>
           <div class="form-error" id="pac-email-err"></div>
         </div>
 
         <div class="form-group full">
-          <label class="form-label">DirecciÃ³n <span class="opt">(opcional)</span></label>
+          <label class="form-label">Dirección <span class="opt">(opcional)</span></label>
           <input type="text" class="form-control" id="pac-direccion" maxlength="150" placeholder="Av. Ejemplo 123, Lima"/>
           <div class="form-error" id="pac-direccion-err"></div>
         </div>
@@ -205,7 +205,7 @@
       <!-- Bloque apoderado (menores) -->
       <div id="bloque-apoderado" style="display:none;margin-bottom:1.25rem;">
         <div class="alert alert-warn" style="margin-bottom:.85rem">
-          <span class="alert-icon">âš ï¸</span>
+          <span class="alert-icon">⚠️</span>
           <span>El paciente es menor de edad. Se requiere datos del apoderado.</span>
         </div>
         <div class="subform">
@@ -219,7 +219,7 @@
             <div class="form-group">
               <label class="form-label">Parentesco <span class="req">*</span></label>
               <select class="form-control" id="pac-parentesco-apoderado">
-                <option value="">Seleccionarâ€¦</option>
+                <option value="">Seleccionar…</option>
                 <option>Padre</option><option>Madre</option>
                 <option>Tutor legal</option><option>Abuelo/a</option><option>Otro</option>
               </select>
@@ -268,7 +268,7 @@
           </label>
           <label class="alergia-pill" data-valor="Otro">
             <input type="checkbox" name="alergia" value="Otro" onchange="onAlergiaChange(this)"/>
-            <span class="pill-inner">âœï¸ Otro</span>
+            <span class="pill-inner">✏️ Otro</span>
           </label>
         </div>
 
@@ -279,7 +279,7 @@
             Especifica la alergia <span style="color:var(--red)">*</span>
           </label>
           <input type="text" class="form-control" id="pac-alergia-otro"
-            placeholder="Ej: LÃ¡tex, Sulfas, Aspirinaâ€¦" maxlength="100"/>
+            placeholder="Ej: Látex, Sulfas, Aspirina…" maxlength="100"/>
           <div class="form-error" id="pac-alergia-otro-err"></div>
         </div>
 
@@ -303,15 +303,15 @@
           <div class="form-group">
             <label class="form-label">Parentesco <span class="req">*</span></label>
             <select class="form-control" id="pac-emerg-parentesco">
-              <option value="">Seleccionarâ€¦</option>
-              <option>CÃ³nyuge</option><option>Padre</option><option>Madre</option>
+              <option value="">Seleccionar…</option>
+              <option>Cónyuge</option><option>Padre</option><option>Madre</option>
               <option>Hijo/a</option><option>Hermano/a</option><option>Amigo/a</option>
               <option>Tutor legal</option><option>Otro</option>
             </select>
             <div class="form-error" id="pac-emerg-parentesco-err"></div>
           </div>
           <div class="form-group">
-            <label class="form-label">TelÃ©fono <span class="req">*</span></label>
+            <label class="form-label">Teléfono <span class="req">*</span></label>
             <input type="tel" class="form-control" id="pac-emerg-tel" maxlength="9" placeholder="987654321"/>
             <div class="form-error" id="pac-emerg-tel-err"></div>
           </div>
@@ -327,7 +327,7 @@
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• MODAL DETALLE â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ══════════════ MODAL DETALLE ══════════════ -->
 <div class="modal-overlay" id="modal-detalle">
   <div class="modal-box">
     <div class="modal-header">
@@ -335,12 +335,12 @@
         <div class="modal-title" id="det-titulo">Ficha del Paciente</div>
         <div class="modal-subtitle" id="det-codigo"></div>
       </div>
-      <button type="button" class="modal-close" onclick="closeModal('modal-detalle')">âœ•</button>
+      <button type="button" class="modal-close" onclick="closeModal('modal-detalle')">✕</button>
     </div>
     <div id="det-contenido"></div>
     <div class="modal-footer">
       <button type="button" class="btn btn-ghost" onclick="closeModal('modal-detalle')">Cerrar</button>
-      <button type="button" class="btn btn-outline" id="det-btn-editar">âœï¸ Editar</button>
+      <button type="button" class="btn btn-outline" id="det-btn-editar">✏️ Editar</button>
     </div>
   </div>
 </div>
