@@ -50,11 +50,11 @@
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-card">
-      <div class="stat-icon blue">ðŸ‘¥</div>
+      <div class="stat-icon blue">👥</div>
       <div><div class="stat-val" id="st-total">0</div><div class="stat-label">Total Pacientes</div></div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon green">ðŸŸ¢</div>
+      <div class="stat-icon green">🟢</div>
       <div><div class="stat-val" id="st-adultos">0</div><div class="stat-label">Adultos</div></div>
     </div>
     <div class="stat-card">
@@ -62,7 +62,7 @@
       <div><div class="stat-val" id="st-menores">0</div><div class="stat-label">Menores de edad</div></div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon red">ðŸš¨</div>
+      <div class="stat-icon red">🚨</div>
       <div><div class="stat-val" id="st-alergias">0</div><div class="stat-label">Con Alergias</div></div>
     </div>
   </div>
@@ -74,7 +74,7 @@
         <div class="card-title-lg" style="margin:0">Lista de Pacientes</div>
         <div class="search-bar">
           <div class="search-input-wrap">
-            <span class="search-icon">ðŸ”</span>
+            <span class="search-icon">🔍</span>
             <input type="text" class="form-control" id="search-pac" placeholder="Buscar por nombre, apellido o DNI…" oninput="renderTable()"/>
           </div>
           <select class="form-control" id="filter-alergia" onchange="renderTable()" style="min-width:130px;">
@@ -101,7 +101,7 @@
         </table>
       </div>
       <div id="empty-pac" class="empty-state" style="display:none">
-        <div class="empty-icon">ðŸ‘¥</div>
+        <div class="empty-icon">👥</div>
         <div class="empty-title">No hay pacientes registrados</div>
         <div class="empty-sub">Registra el primer paciente con el botón "Nuevo Paciente"</div>
         <button type="button" class="btn btn-primary" style="margin-top:1rem" data-paciente-nuevo>➕ Nuevo Paciente</button>
@@ -322,7 +322,7 @@
 
     <div class="modal-footer">
       <button type="button" class="btn btn-ghost" onclick="closeModal('modal-nuevo')">Cancelar</button>
-      <button type="button" class="btn btn-primary" id="btn-guardar-paciente">ðŸ’¾ Guardar Paciente</button>
+      <button type="button" class="btn btn-primary" id="btn-guardar-paciente">💾 Guardar Paciente</button>
     </div>
   </div>
 </div>
