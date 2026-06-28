@@ -248,30 +248,67 @@ async function handleRegistro(e) {
     const userId = signupData.user?.id;
     if (!userId) throw new Error('No se obtuvo ID de usuario. Verifica tu correo y vuelve a intentar.');
 
-    // ── 2. Insertar perfil en usuarios_perfil (con anon key) ──
-    //    El perfil se guarda con anon key; si RLS lo bloquea,
-    //    cargarPerfil() lo creará con fallback en el primer login.
+    // ── 2. Hacer login automático para obtener access_token ───
+    //    Necesario porque sbFetch usa el token de sesión para
+    //    pasar el RLS (política: auth.role() = 'authenticated').
+    //    Sin este paso el INSERT a usuarios_perfil falla silenciosamente.
+    let sessionToken = null;
+    try {
+      const loginRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { apikey: SUPABASE_ANON, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (loginRes.ok) {
+        const loginData = await loginRes.json();
+        sessionToken = loginData.access_token;
+        // Guardar sesión temporalmente para que sbFetch la use
+        saveSession(loginData);
+      }
+    } catch (_) { /* Si el login falla (ej. email no confirmado), continuamos */ }
+
+    // ── 3. Insertar perfil en usuarios_perfil ─────────────────
+    //    Si tenemos token lo usamos vía sbFetch (pasa RLS).
+    //    Si no, intentamos con service-role header (fallback).
     const rolNorm = rol === 'Recepción' ? 'Recepcionista' : rol;
-    const fallbackRes = await fetch(`${SUPABASE_URL}/rest/v1/usuarios_perfil`, {
-      method: 'POST',
-      headers: {
-        apikey: SUPABASE_ANON,
-        Authorization: `Bearer ${SUPABASE_ANON}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation',
-      },
-      body: JSON.stringify({
-        user_id: userId,
-        nombre:  nombre,
-        correo:  email,
-        rol:     rolNorm,
-      }),
+    const perfilPayload = JSON.stringify({
+      user_id: userId,
+      nombre:  nombre,
+      correo:  email,
+      rol:     rolNorm,
     });
-    if (!fallbackRes.ok) {
-      const errText = await fallbackRes.text();
-      console.warn('Perfil no guardado (RLS activo):', errText);
-      // No es error fatal: cargarPerfil() lo manejará en el primer login
+
+    if (sessionToken) {
+      // Inserción autenticada — pasa RLS correctamente
+      await sbFetch('usuarios_perfil', {
+        method: 'POST',
+        body: perfilPayload,
+      });
+    } else {
+      // Fallback: insertar con anon key (solo funciona si desactivaste
+      // "Confirm email" en Supabase → Authentication → Providers → Email)
+      const fallbackRes = await fetch(`${SUPABASE_URL}/rest/v1/usuarios_perfil`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_ANON,
+          Authorization: `Bearer ${SUPABASE_ANON}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation',
+        },
+        body: perfilPayload,
+      });
+      if (!fallbackRes.ok) {
+        const errText = await fallbackRes.text();
+        console.warn('Perfil no guardado (sin sesión activa):', errText);
+        // No lanzamos error: el usuario fue creado en Auth, el perfil
+        // se creará en el primer login via cargarPerfil() con fallback.
+      }
     }
+
+    // ── 4. Limpiar sesión temporal si no queremos auto-login ──
+    // (el usuario debe iniciar sesión manualmente)
+    DB.setObj('session', null);
+    DB.setObj('perfil', null);
 
     showAuthAlert('alert-registro',
       '✅ Cuenta creada exitosamente. Ya puedes iniciar sesión.',

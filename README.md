@@ -1,6 +1,6 @@
 # MediCore — Sistema de Gestión de Clínica
 
-Sistema web para gestión clínica con Supabase Auth y Supabase Database
+Sistema web para gestión clínica con Supabase Auth y Supabase Database.
 
 ## 🚀 Acceso rápido
 
